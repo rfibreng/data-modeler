@@ -62,12 +62,12 @@ Catatan DONE:
 
 - build docker and docker-compose
 - buat akun github pakai fibrcorp,
+- setup ssh github
+- push it to that to
 
 password github:qtcayqur246dxkt
 
 Catatan:
-- setup ssh github
-- push it to that to
 - pull from the server
 - install docker from the server
 - try to run and access it

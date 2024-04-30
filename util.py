@@ -106,7 +106,7 @@ def prev_page_inference(st):
     st.session_state.current_page_inference-=1
 
 def process_data(uploaded_file, option_selected):
-    if uploaded_file is not None and uploaded_file.split('/')[-1] != 'None':
+    if uploaded_file is not None:
         try:
             # Uploading Dataframe
             dataframe = get_data(uploaded_file)
