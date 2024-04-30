@@ -8,19 +8,57 @@ from sklearn.compose import ColumnTransformer
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2.extras import execute_values
 import json
-from util import config
+from util import config, remove_punctuation
 from datetime import datetime
+import uuid
+import pandas as pd
+
+def dtype_to_sql(dtype):
+    if dtype == 'int64':
+        return 'BIGINT'
+    elif dtype == 'float64':
+        return 'DOUBLE PRECISION'
+    elif dtype == 'bool':
+        return 'BOOLEAN'
+    else:
+        return 'TEXT'
 
 def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, null_method, df_column_number_feature, df_column_text_feature, df_target_column):
     # Convert DataFrames to JSON strings as necessary
+    uid = uuid.uuid4()
+    uid = str(uid).replace("-","")
+
+    # Establish a connection to the database
+    cursor = conn.cursor()
+
     output_feature = {}
     for key,value in df_output_features.items():
         if value.isna().any().any():  # Check if there are any NaN values
             value = value.fillna('')
-        output_feature[key] = value.to_dict()
-    output_feature = json.dumps(output_feature)
-    is_null = json.dumps(df_is_null.to_dict()) if df_is_null is not None else None
+        output_feature[key] = value
+
+
+    table_name = {key:f"fe_{uid}_{key}_{dataset_name.replace('.csv','')}" for key in output_feature.keys()}
+
+    is_null = df_is_null if df_is_null is not None else None
+    if is_null is not None:
+        table_name['isnull'] = f"feature_engineering_{uid}_{dataset_name.replace('.csv','')}_is_null"
+        output_feature['isnull'] = is_null.to_frame().T
+
+    for key in table_name.keys():
+        df = output_feature[key]
+        if isinstance(df, pd.Series):
+            clean_name = remove_punctuation(df.name).replace(' ', '_')
+            sql_type = dtype_to_sql(df.dtype.name)
+            col_with_type = f"{clean_name} {sql_type}"
+            print(col_with_type)
+        else:
+            cols_with_types = ", ".join([f"{remove_punctuation(col).replace(' ','_')} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
+        create_table_query = f"CREATE TABLE {table_name[key]} ({cols_with_types})"
+        cursor.execute(create_table_query)
+
     column_number_feature = json.dumps(df_column_number_feature) if df_column_number_feature is not None else None
     column_text_feature = json.dumps(df_column_text_feature) if df_column_text_feature is not None else None
     target_column = json.dumps([df_target_column]) if df_target_column is not None else None
@@ -31,20 +69,30 @@ def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, nu
     # Prepare and execute the insertion query
     cursor.execute(
         """
-        INSERT INTO feature_engineering (
-            dataset, output_feature, is_scale, is_null, null_method,
+        INSERT INTO feature_engineering_master (
+            id,dataset, is_scale, null_method,
             column_number_feature, column_text_feature, target_column, prediction_at
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ) VALUES (%s,%s, %s, %s, %s, %s, %s, %s)
         """,
-        (dataset_name, output_feature, is_scale, is_null, null_method,
+        (uid,dataset_name, is_scale, null_method,
          column_number_feature, column_text_feature, target_column, datetime.now())
     )
-    print("Data input successfully")
+
+    for key in table_name.keys():
+        df = output_feature[key]
+        if isinstance(df, pd.Series):
+            column_name = remove_punctuation(df.name).replace(' ', '_')
+            insert_query = f"INSERT INTO {table_name[key]} ({column_name}) VALUES %s"
+            execute_values(cursor, insert_query, [(value,) for value in df])
+        else:
+            insert_query = f"INSERT INTO {table_name[key]} ({', '.join([remove_punctuation(col).replace(' ','_') for col in df.columns if not col.startswith('Unnamed')])}) VALUES %s"
+            execute_values(cursor, insert_query, df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist())
     
     # Commit the transactions and close the connection
     conn.commit()
     cursor.close()
     conn.close()
+    print("Data input successfully")
 
 def feature_engineering_page(st):
     st.markdown("<h2 class='menu-title'>Feature Engineering</h2>",
@@ -103,12 +151,10 @@ def feature_engineering_page(st):
 
     # Create table if it doesn't exist
     create_table_query = """
-    CREATE TABLE IF NOT EXISTS feature_engineering (
+    CREATE TABLE IF NOT EXISTS feature_engineering_master (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         dataset VARCHAR(50),
-        output_feature JSON,
         is_scale BOOLEAN,
-        is_null JSON NULL,
         null_method VARCHAR(50) NULL,
         column_number_feature JSON NULL,
         column_text_feature JSON NULL,
@@ -312,14 +358,14 @@ def feature_engineering_page(st):
             if st.button('Save'):
                 if is_scale:
                     df_output_features = {
-                        "scaled_data_train":st.session_state['scaled_data_train'],
-                        "scaled_data_test":st.session_state['scaled_data_test'],
-                        "y_train":st.session_state['y_train'],
-                        "y_test":st.session_state['y_test']
+                        "xtrain":st.session_state['scaled_data_train'],
+                        "xtest":st.session_state['scaled_data_test'],
+                        "ytrain":st.session_state['y_train'],
+                        "ytest":st.session_state['y_test']
                     }
                 else:
                     df_output_features = {
-                        "original_data":st.session_state['data']
+                        "ori":st.session_state['data']
                     }
                 insert_data(conn, is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
@@ -515,14 +561,14 @@ def feature_engineering_page(st):
             if st.button('Save'):
                 if is_scale:
                     df_output_features = {
-                        "scaled_data_train":st.session_state['scaled_data_train'],
-                        "scaled_data_test":st.session_state['scaled_data_test'],
-                        "y_train":st.session_state['y_train'],
-                        "y_test":st.session_state['y_test']
+                        "xtrain":st.session_state['scaled_data_train'],
+                        "xtest":st.session_state['scaled_data_test'],
+                        "ytrain":st.session_state['y_train'],
+                        "ytest":st.session_state['y_test']
                     }
                 else:
                     df_output_features = {
-                        "original_data":st.session_state['data']
+                        "ori":st.session_state['data']
                     }
                 insert_data(conn, is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
@@ -653,11 +699,11 @@ def feature_engineering_page(st):
             if st.button('Save'):
                 if is_scale:
                     df_output_features = {
-                        "scaled_data_train":st.session_state['scaled_data_train'],
+                        "train":st.session_state['scaled_data_train'],
                     }
                 else:
                     df_output_features = {
-                        "original_data":st.session_state['data']
+                        "ori":st.session_state['data']
                     }
                 insert_data(conn, is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=None, df_output_features=df_output_features,

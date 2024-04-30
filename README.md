@@ -72,7 +72,7 @@ Catatan:
 data_exploration_{uid}_{nama_datasets}_{raw_data/correlation/data_description}
 data_exploration_master
 uid, nama, datasets, time_stamp
-    - prediction
+    - prediction DONE
     - exploration
     - feature engineering
 - database dengan starrock

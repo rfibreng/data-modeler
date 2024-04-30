@@ -10,7 +10,6 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from psycopg2.extras import execute_values
 from datetime import datetime
 import uuid
-from psycopg2.extensions import AsIs
 import pandas as pd
 
 def dtype_to_sql(dtype):
@@ -32,7 +31,7 @@ def insert_data(df, dataset_name, model_description, conn):
     cursor = conn.cursor()
 
     # Construct table name
-    table_name = f"predictions_{uid}_{dataset_name.replace('.csv','')}_output_prediction"
+    table_name = f"predictions_{uid}_{dataset_name.replace('.csv','')}"
     
     # Create a new table based on the structure of df
     cols_with_types = ", ".join([f"{remove_punctuation(col).replace(' ','_')} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
