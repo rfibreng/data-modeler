@@ -74,7 +74,7 @@ data_exploration_master
 uid, nama, datasets, time_stamp
     - prediction DONE
     - exploration
-    - feature engineering
+    - feature engineering DONE
 - database dengan starrock
 - pull from the server
 - try to run and access it
