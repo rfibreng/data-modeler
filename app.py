@@ -78,7 +78,7 @@ st.sidebar.image("assets/logo2.png",
 
 # Sidebar Menu
 with st.sidebar:
-    menu_selected = option_menu("", ["Home", "Data Exploration", "Data Editing", "Feature Engineering", "Modelling", "Experiment Logs", "Inference", "Inference Logs"],
+    menu_selected = option_menu("", ["Home", "Data Exploration", "Data Editing", "Feature Engineering", "Modelling", "Experiment Logs", "Inference"],
                                 icons=["house", "card-list", "pencil-square",
                                        "columns-gap", "gear", "folder", "play", "folder"],
                                 menu_icon="cast",
@@ -120,6 +120,3 @@ if menu_selected == "Experiment Logs":
 # Configuring inference menu
 if menu_selected == "Inference":
     inference_page(st)
-
-if menu_selected == "Inference Logs":
-    inference_log_page(st)

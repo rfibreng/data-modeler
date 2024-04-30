@@ -4,31 +4,59 @@ from util import get_data, load_result
 from streamlit_option_menu import option_menu
 import os
 import pickle
-from util import config
+from util import config, remove_punctuation
 import psycopg2
-from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-import json
+from psycopg2.extras import execute_values
 from datetime import datetime
+import uuid
+from psycopg2.extensions import AsIs
+import pandas as pd
 
-# Function to insert data into the database
+def dtype_to_sql(dtype):
+    if dtype == 'int64':
+        return 'BIGINT'
+    elif dtype == 'float64':
+        return 'DOUBLE PRECISION'
+    elif dtype == 'bool':
+        return 'BOOLEAN'
+    else:
+        return 'TEXT'
+
 def insert_data(df, dataset_name, model_description, conn):
-    # Convert DataFrame to a dictionary and then to a JSON string
-    output_prediction = json.dumps(df.to_dict(orient='records'))
-    
+    # Generate a unique identifier
+    uid = uuid.uuid4()
+    uid = str(uid).replace("-","")
+
     # Establish a connection to the database
     cursor = conn.cursor()
 
-    # Prepare and execute the insertion query
+    # Construct table name
+    table_name = f"predictions_{uid}_{dataset_name.replace('.csv','')}_output_prediction"
+    
+    # Create a new table based on the structure of df
+    cols_with_types = ", ".join([f"{remove_punctuation(col).replace(' ','_')} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
+    create_table_query = f"CREATE TABLE {table_name} ({cols_with_types})"
+    cursor.execute(create_table_query)
+
+    # Prepare and execute the insertion query for the main predictions_master table
     cursor.execute(
-        "INSERT INTO predictions (dataset, output_prediction, model_prediction, prediction_at) VALUES (%s, %s, %s, %s)",
-        (dataset_name, output_prediction, model_description, datetime.now())
+        "INSERT INTO predictions_master (id, dataset, model_prediction, prediction_at) VALUES (%s, %s, %s, %s)",
+        (str(uid), dataset_name, model_description, datetime.now())
     )
-    print("data input successfully")
-    # Commit the transactions and close the connection
+
+    # Insert DataFrame data into the newly created table using psycopg2's execute_values for bulk insertion
+    insert_query = f"INSERT INTO {table_name} ({', '.join([remove_punctuation(col).replace(' ','_') for col in df.columns if not col.startswith('Unnamed')])}) VALUES %s"
+    execute_values(cursor, insert_query, df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist())
+
+    # Commit the transactions
     conn.commit()
+    
+    # Close the cursor and connection
     cursor.close()
     conn.close()
+    
+    print("Data input successfully")
 
 def inference_page(st):
 
@@ -47,10 +75,9 @@ def inference_page(st):
 
     # Create table if it doesn't exist
     create_table_query = """
-    CREATE TABLE IF NOT EXISTS predictions (
+    CREATE TABLE IF NOT EXISTS predictions_master (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         dataset VARCHAR(50),
-        output_prediction JSON,
         model_prediction VARCHAR(100),
         prediction_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );

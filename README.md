@@ -68,8 +68,15 @@ Catatan DONE:
 password github:qtcayqur246dxkt
 
 Catatan:
+- diganti table
+data_exploration_{uid}_{nama_datasets}_{raw_data/correlation/data_description}
+data_exploration_master
+uid, nama, datasets, time_stamp
+    - prediction
+    - exploration
+    - feature engineering
+- database dengan starrock
 - pull from the server
-- install docker from the server
 - try to run and access it
 - also access it using dbeaver for postgres
 - try to access some data from pds

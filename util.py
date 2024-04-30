@@ -12,6 +12,13 @@ import os
 import pickle
 from uuid import uuid4
 import yaml
+import string
+
+def remove_punctuation(text):
+    # Create a translation table that maps each punctuation character to None
+    translator = str.maketrans('', '', string.punctuation)
+    # Use the translate method to remove punctuation
+    return text.translate(translator)
 
 # Caching data for dataframe
 @st.cache_data
