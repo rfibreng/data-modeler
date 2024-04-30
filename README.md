@@ -10,16 +10,29 @@ FibrCorp
 - Ruby Abdullah
 
 ## How to Setup
+From source:
 ```
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-
+Docker:
+```
+docker compose build
+```
 ## How to Run
+From source:
 ```
 streamlit run app.py
 ```
+Docker:
+```
+docker compose up -d
+```
+## Configuration
+you can check or do some config on our configuration
+- config/config.yml (for software configuration)
+- docker-compose.yml (for deployment configuration)
 
 Enhancement True AI:
 - save model kedalam folder
