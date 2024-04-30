@@ -1,0 +1,5 @@
+output_path: 'output'
+pds_data_path: 'datasets'
+db_host: 'postgresql'
+db_user: 'postgres'
+db_password: 'mysecretpassword'

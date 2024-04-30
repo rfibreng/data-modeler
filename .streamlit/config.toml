@@ -1,0 +1,16 @@
+[theme]
+primaryColor="#282d2fff"
+backgroundColor="#282d2fff"
+secondaryBackgroundColor="#25292aff"
+textColor="#EEEEEE"
+font="sans serif"
+
+[deprecation]
+showPyplotGlobalUse = false
+
+[server]
+maxUploadSize = 2000
+maxMessageSize = 8000
+
+[browser]
+gatherUsageStats = false
