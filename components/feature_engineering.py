@@ -1,4 +1,4 @@
-from util import data_uploader_components, get_data
+from util import data_uploader_components, dtype_to_sql, get_data, transform_digits
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.model_selection import train_test_split
 from streamlit_option_menu import option_menu
@@ -14,16 +14,6 @@ from util import config, remove_punctuation
 from datetime import datetime
 import uuid
 import pandas as pd
-
-def dtype_to_sql(dtype):
-    if dtype == 'int64':
-        return 'BIGINT'
-    elif dtype == 'float64':
-        return 'DOUBLE PRECISION'
-    elif dtype == 'bool':
-        return 'BOOLEAN'
-    else:
-        return 'TEXT'
 
 def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, null_method, df_column_number_feature, df_column_text_feature, df_target_column):
     # Convert DataFrames to JSON strings as necessary
@@ -50,12 +40,12 @@ def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, nu
     for key in table_name.keys():
         df = output_feature[key]
         if isinstance(df, pd.Series):
-            clean_name = remove_punctuation(df.name).replace(' ', '_')
+            clean_name = transform_digits(remove_punctuation(df.name).replace(' ','_'))
             sql_type = dtype_to_sql(df.dtype.name)
             col_with_type = f"{clean_name} {sql_type}"
             print(col_with_type)
         else:
-            cols_with_types = ", ".join([f"{remove_punctuation(col).replace(' ','_')} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
+            cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
         create_table_query = f"CREATE TABLE {table_name[key]} ({cols_with_types})"
         cursor.execute(create_table_query)
 
@@ -81,11 +71,11 @@ def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, nu
     for key in table_name.keys():
         df = output_feature[key]
         if isinstance(df, pd.Series):
-            column_name = remove_punctuation(df.name).replace(' ', '_')
+            column_name = transform_digits(remove_punctuation(df.name).replace(' ','_'))
             insert_query = f"INSERT INTO {table_name[key]} ({column_name}) VALUES %s"
             execute_values(cursor, insert_query, [(value,) for value in df])
         else:
-            insert_query = f"INSERT INTO {table_name[key]} ({', '.join([remove_punctuation(col).replace(' ','_') for col in df.columns if not col.startswith('Unnamed')])}) VALUES %s"
+            insert_query = f"INSERT INTO {table_name[key]} ({', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])}) VALUES %s"
             execute_values(cursor, insert_query, df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist())
     
     # Commit the transactions and close the connection

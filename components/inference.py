@@ -1,6 +1,6 @@
 from sklearn.cluster import DBSCAN, AgglomerativeClustering
 from sklearn.pipeline import Pipeline
-from util import get_data, load_result
+from util import dtype_to_sql, get_data, load_result, transform_digits
 from streamlit_option_menu import option_menu
 import os
 import pickle
@@ -11,16 +11,6 @@ from psycopg2.extras import execute_values
 from datetime import datetime
 import uuid
 import pandas as pd
-
-def dtype_to_sql(dtype):
-    if dtype == 'int64':
-        return 'BIGINT'
-    elif dtype == 'float64':
-        return 'DOUBLE PRECISION'
-    elif dtype == 'bool':
-        return 'BOOLEAN'
-    else:
-        return 'TEXT'
 
 def insert_data(df, dataset_name, model_description, conn):
     # Generate a unique identifier
@@ -34,7 +24,7 @@ def insert_data(df, dataset_name, model_description, conn):
     table_name = f"predictions_{uid}_{dataset_name.replace('.csv','')}"
     
     # Create a new table based on the structure of df
-    cols_with_types = ", ".join([f"{remove_punctuation(col).replace(' ','_')} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
+    cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
     create_table_query = f"CREATE TABLE {table_name} ({cols_with_types})"
     cursor.execute(create_table_query)
 
@@ -45,7 +35,7 @@ def insert_data(df, dataset_name, model_description, conn):
     )
 
     # Insert DataFrame data into the newly created table using psycopg2's execute_values for bulk insertion
-    insert_query = f"INSERT INTO {table_name} ({', '.join([remove_punctuation(col).replace(' ','_') for col in df.columns if not col.startswith('Unnamed')])}) VALUES %s"
+    insert_query = f"INSERT INTO {table_name} ({', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])}) VALUES %s"
     execute_values(cursor, insert_query, df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist())
 
     # Commit the transactions

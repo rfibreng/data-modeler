@@ -125,7 +125,7 @@ def process_data(uploaded_file, option_selected):
                 if option_selected == "Upload":
                     st.session_state['data_name'] = uploaded_file.name
                 else:
-                    st.session_state['data_name'] = uploaded_file
+                    st.session_state['data_name'] = uploaded_file.split('/')[-1]
             else:
                 if st.button('Update Data'):
                     st.session_state['data'] = dataframe
@@ -133,7 +133,7 @@ def process_data(uploaded_file, option_selected):
                     if option_selected == "Upload":
                         st.session_state['data_name'] = uploaded_file.name
                     else:
-                        st.session_state['data_name'] = uploaded_file
+                        st.session_state['data_name'] = uploaded_file.split('/')[-1]
 
         except Exception as e:
             print("waduh: ",e)
@@ -156,4 +156,61 @@ def data_uploader_components(st):
         uploaded_file = os.path.join(config['pds_data_path'], uploaded_file)
     process_data(uploaded_file, option_selected)
     
+def dtype_to_sql(dtype):
+    if dtype == 'int64':
+        return 'BIGINT'
+    elif dtype == 'float64':
+        return 'DOUBLE PRECISION'
+    elif dtype == 'bool':
+        return 'BOOLEAN'
+    else:
+        return 'TEXT'
+    
+def transform_digits(text):
+    if text.isdigit():
+        text = '_'+text
+    
+    return text
+
+def descriptive_stats_to_table(df):
+    """
+    Converts descriptive statistics of a DataFrame into a tabular format where each row corresponds
+    to a statistical measure (like mean, std, etc.) for all variables, including a 'desc' column.
+
+    Parameters:
+        df (pd.DataFrame): The DataFrame for which to compute the descriptive statistics.
+
+    Returns:
+        pd.DataFrame: A DataFrame where each row represents a different statistical measure,
+                      with an additional 'desc' column.
+    """
+    # Computing the descriptive statistics
+    descriptive_stats = df.describe().transpose()
+
+    # Resetting index to add 'desc' column
+    descriptive_stats.reset_index(inplace=True)
+    descriptive_stats.rename(columns={'index': 'descr'}, inplace=True)
+
+    return descriptive_stats
+
+def correlation_matrix_to_table(df):
+    """
+    Converts a DataFrame's correlation matrix into a tabular format where each row corresponds
+    to the correlations of one variable with all others, including a 'correlated by' column.
+
+    Parameters:
+        df (pd.DataFrame): The DataFrame for which to compute the correlation.
+
+    Returns:
+        pd.DataFrame: A DataFrame where each row shows correlations of one variable with others,
+                      with an additional 'correlated by' column.
+    """
+    # Computing the correlation matrix
+    correlation_matrix = df.corr()
+
+    # Resetting index to add 'correlated by' column
+    correlation_matrix.reset_index(inplace=True)
+    correlation_matrix.rename(columns={'index': 'correlated by'}, inplace=True)
+
+    return correlation_matrix
     
