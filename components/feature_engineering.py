@@ -39,7 +39,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
     for key in table_name.keys():
         st.write(key)
         df = output_feature[key]
-        st.write(df, df.shape, type(df))
+        st.write(df, df.shape)
         if isinstance(df, pd.Series):
             st.write('Series')
             clean_name = transform_digits(remove_punctuation(df.name).replace(' ','_'))
@@ -53,7 +53,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
             df = add_index_column_if_first_is_float(df)
             output_feature[key] = df
             cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
-            st.write(col_with_type)
+            st.write(cols_with_types)
         create_table_query = f"CREATE TABLE {table_name[key]} ({cols_with_types})"
         connection.execute(create_table_query)
 
