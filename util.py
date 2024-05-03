@@ -157,7 +157,6 @@ def data_uploader_components(st):
             # Filter and add CSV files to data_list
             data_list.extend([os.path.join(dirpath, file) for file in filenames if file.endswith('.csv')])
         uploaded_file = st.selectbox("Data",data_list)
-        uploaded_file = os.path.join(config['pds_data_path'], uploaded_file)
     process_data(uploaded_file, option_selected)
     
 def dtype_to_sql(dtype):
