@@ -151,7 +151,11 @@ def data_uploader_components(st):
                                      )
         
     elif option_selected == "PDS":
-        data_list = ["None"]+[x for x in os.listdir(config['pds_data_path']) if x.endswith('csv')]
+        data_list = ["None"]
+        # Use os.walk to traverse through all directories and subdirectories
+        for dirpath, dirnames, filenames in os.walk(config['pds_data_path']):
+            # Filter and add CSV files to data_list
+            data_list.extend([os.path.join(dirpath, file) for file in filenames if file.endswith('.csv')])
         uploaded_file = st.selectbox("Data",data_list)
         uploaded_file = os.path.join(config['pds_data_path'], uploaded_file)
     process_data(uploaded_file, option_selected)
