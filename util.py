@@ -1,4 +1,3 @@
-import uuid
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -10,9 +9,9 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import roc_auc_score
 import os
 import pickle
-from uuid import uuid4
 import yaml
 import string
+import random
 
 def remove_punctuation(text):
     # Create a translation table that maps each punctuation character to None
@@ -75,7 +74,7 @@ def load_config(config_path):
 config = load_config('config/config.yml')
 
 def save_result(data_to_save, model_selection, model):
-    uid = str(uuid4())
+    uid = str(generate_random_alphanumeric())
     try:
         # Building the path using the config
         base_output_path = config['output_path']
@@ -235,3 +234,7 @@ def correlation_matrix_to_table(df):
 
     return correlation_matrix
     
+def generate_random_alphanumeric():
+    characters = string.ascii_letters + string.digits  # Includes both letters and digits
+    random_string = ''.join(random.choice(characters) for _ in range(5))
+    return random_string

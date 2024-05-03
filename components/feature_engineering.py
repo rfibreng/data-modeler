@@ -1,4 +1,4 @@
-from util import add_index_column_if_first_is_float, data_uploader_components, dtype_to_sql, get_data, transform_digits
+from util import add_index_column_if_first_is_float, data_uploader_components, dtype_to_sql, generate_random_alphanumeric, get_data, transform_digits
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.model_selection import train_test_split
 from streamlit_option_menu import option_menu
@@ -18,7 +18,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
     engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
     connection = engine.connect()
 
-    uid = uuid.uuid4()
+    uid = generate_random_alphanumeric()
     uid = str(uid).replace("-","")
 
 

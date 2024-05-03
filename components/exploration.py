@@ -1,5 +1,5 @@
 import uuid
-from util import add_index_column_if_first_is_float, correlation_matrix_to_table, data_uploader_components, descriptive_stats_to_table, dtype_to_sql, get_data, transform_digits
+from util import add_index_column_if_first_is_float, correlation_matrix_to_table, data_uploader_components, descriptive_stats_to_table, dtype_to_sql, generate_random_alphanumeric, get_data, transform_digits
 from streamlit_pandas_profiling import st_profile_report
 from util import config, remove_punctuation
 import pandas as pd
@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 def insert_data(dataset_name, dataframe):
     engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
     connection = engine.connect()
-    uid = uuid.uuid4()
+    uid = generate_random_alphanumeric()
     uid = str(uid).replace("-","")
 
     # Convert DataFrames to JSON strings as necessary

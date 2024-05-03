@@ -1,6 +1,6 @@
 from sklearn.cluster import DBSCAN, AgglomerativeClustering
 from sklearn.pipeline import Pipeline
-from util import add_index_column_if_first_is_float, dtype_to_sql, get_data, load_result, transform_digits
+from util import add_index_column_if_first_is_float, dtype_to_sql, generate_random_alphanumeric, get_data, load_result, transform_digits
 from streamlit_option_menu import option_menu
 import os
 import pickle
@@ -15,7 +15,7 @@ def insert_data(df, dataset_name, model_description):
     connection = engine.connect()
 
     # Generate a unique identifier
-    uid = uuid.uuid4()
+    uid = generate_random_alphanumeric()
     uid = str(uid).replace("-","")
 
     # Construct table name
