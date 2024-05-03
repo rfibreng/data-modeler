@@ -55,6 +55,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
             cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
             st.write(cols_with_types)
         create_table_query = f"CREATE TABLE {table_name[key]} ({cols_with_types})"
+        st.write(create_table_query)
         connection.execute(create_table_query)
 
     column_number_feature = json.dumps(df_column_number_feature) if df_column_number_feature is not None else None
