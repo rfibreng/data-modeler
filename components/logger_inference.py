@@ -7,7 +7,7 @@ import os
 import pickle
 from datetime import datetime, timedelta
 from util import config
-import psycopg2
+# import psycopg2
 import pandas as pd
 
 def get_total_records(dbname, user, password, host):

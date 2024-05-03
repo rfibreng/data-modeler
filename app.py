@@ -16,9 +16,12 @@ from components.exploration import data_exploration_page
 from components.feature_engineering import feature_engineering_page
 from components.inference import inference_page
 from components.logger import experiment_log_page, show_classification_metrics_logger, show_clustering_metrics_logger, show_regression_metrics_logger
-from components.logger_inference import inference_log_page
 from components.modeling import modeling_page, show_classification_metrics, show_clustering_metrics, show_data_prediction, show_regression_metrics
 import util as utl
+from util import config
+from sqlalchemy import create_engine
+from sqlalchemy.schema import Table, MetaData, Column
+from sqlalchemy.sql.expression import select, text
 
 from util import get_data, load_result, next_page, prev_page, save_result, show_roc_auc_score_binary_class
 
@@ -91,6 +94,9 @@ with st.sidebar:
 # Configuring home menu
 if menu_selected == "Home":
     # st.write("Welcome")
+    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}")
+    connection = engine.connect()
+    connection.execute(f"CREATE DATABASE IF NOT EXISTS {config['db_name']};")
     st.image("assets/header.png",
              output_format='PNG')
 

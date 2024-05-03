@@ -1,78 +1,66 @@
 from sklearn.cluster import DBSCAN, AgglomerativeClustering
 from sklearn.pipeline import Pipeline
-from util import dtype_to_sql, get_data, load_result, transform_digits
+from util import add_index_column_if_first_is_float, dtype_to_sql, get_data, load_result, transform_digits
 from streamlit_option_menu import option_menu
 import os
 import pickle
 from util import config, remove_punctuation
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2.extras import execute_values
+from sqlalchemy import create_engine, MetaData, Table, Column, String, DateTime
 from datetime import datetime
 import uuid
 import pandas as pd
 
-def insert_data(df, dataset_name, model_description, conn):
+def insert_data(df, dataset_name, model_description):
+    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+    connection = engine.connect()
+
     # Generate a unique identifier
     uid = uuid.uuid4()
     uid = str(uid).replace("-","")
 
-    # Establish a connection to the database
-    cursor = conn.cursor()
-
     # Construct table name
     table_name = f"predictions_{uid}_{dataset_name.replace('.csv','')}"
+
+    valid_columns = [col for col in df.columns if not col.startswith('Unnamed')]
+    df = df[valid_columns]
+    df = add_index_column_if_first_is_float(df)
     
     # Create a new table based on the structure of df
     cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
     create_table_query = f"CREATE TABLE {table_name} ({cols_with_types})"
-    cursor.execute(create_table_query)
+    connection.execute(create_table_query)
 
     # Prepare and execute the insertion query for the main predictions_master table
-    cursor.execute(
+    connection.execute(
         "INSERT INTO predictions_master (id, dataset, model_prediction, prediction_at) VALUES (%s, %s, %s, %s)",
         (str(uid), dataset_name, model_description, datetime.now())
     )
 
     # Insert DataFrame data into the newly created table using psycopg2's execute_values for bulk insertion
-    insert_query = f"INSERT INTO {table_name} ({', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])}) VALUES %s"
-    execute_values(cursor, insert_query, df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist())
-
-    # Commit the transactions
-    conn.commit()
-    
-    # Close the cursor and connection
-    cursor.close()
-    conn.close()
+    column_names = ', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])
+    placeholders = ', '.join(['%s'] * len(valid_columns))
+    insert_query = f"INSERT INTO {table_name} ({column_names}) VALUES ({placeholders})"
+    values_to_insert = df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist()
+    connection.execute(insert_query, values_to_insert)
     
     print("Data input successfully")
 
 def inference_page(st):
 
-    conn = psycopg2.connect(dbname='postgres', user=config['db_user'], password=config['db_password'], host=config['db_host'])
-    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-    cursor = conn.cursor()
-
-    # Create database if it doesn't exist
-    cursor.close()
-    conn.close()
-
-    conn = psycopg2.connect(dbname='postgres', user=config['db_user'], password=config['db_password'], host=config['db_host'])
-    cursor = conn.cursor()
-
-    cursor.execute("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
+    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+    connection = engine.connect()
 
     # Create table if it doesn't exist
     create_table_query = """
     CREATE TABLE IF NOT EXISTS predictions_master (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id VARCHAR(100),
         dataset VARCHAR(50),
         model_prediction VARCHAR(100),
-        prediction_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        prediction_at DATETIME
     );
     """
-    cursor.execute(create_table_query)
-    conn.commit()  # Commit the transaction
+    connection.execute(create_table_query)
+
     print("Database and table checked/created successfully.")
 
     st.markdown("<h2 class='menu-title'>Load Model</h2>",
@@ -179,7 +167,7 @@ def inference_page(st):
 
                 model_name = task_selected + '-' + model_name
 
-                insert_data(dataframe, uploaded_file.name, model_name, conn)  # Specify your dataset name and model description
+                insert_data(dataframe, uploaded_file.name, model_name)  # Specify your dataset name and model description
 
                 # Adding one space
                 st.markdown("<br>", unsafe_allow_html=True)

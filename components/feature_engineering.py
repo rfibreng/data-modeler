@@ -1,27 +1,25 @@
-from util import data_uploader_components, dtype_to_sql, get_data, transform_digits
+from util import add_index_column_if_first_is_float, data_uploader_components, dtype_to_sql, get_data, transform_digits
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 from sklearn.model_selection import train_test_split
 from streamlit_option_menu import option_menu
 import pandas as pd
 import numpy as np
 from sklearn.compose import ColumnTransformer
-import psycopg2
-from psycopg2 import sql
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from psycopg2.extras import execute_values
+from sqlalchemy import create_engine
 import json
 from util import config, remove_punctuation
 from datetime import datetime
 import uuid
 import pandas as pd
 
-def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, null_method, df_column_number_feature, df_column_text_feature, df_target_column):
+def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_method, df_column_number_feature, df_column_text_feature, df_target_column):
     # Convert DataFrames to JSON strings as necessary
+    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+    connection = engine.connect()
+
     uid = uuid.uuid4()
     uid = str(uid).replace("-","")
 
-    # Establish a connection to the database
-    cursor = conn.cursor()
 
     output_feature = {}
     for key,value in df_output_features.items():
@@ -34,7 +32,7 @@ def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, nu
 
     is_null = df_is_null if df_is_null is not None else None
     if is_null is not None:
-        table_name['isnull'] = f"feature_engineering_{uid}_{dataset_name.replace('.csv','')}_is_null"
+        table_name['isnull'] = f"fe_{uid}_isnull_{dataset_name.replace('.csv','')}"
         output_feature['isnull'] = is_null.to_frame().T
 
     for key in table_name.keys():
@@ -45,19 +43,20 @@ def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, nu
             col_with_type = f"{clean_name} {sql_type}"
             print(col_with_type)
         else:
+            valid_columns = [col for col in df.columns if not col.startswith('Unnamed')]
+            df = df[valid_columns]
+            df = add_index_column_if_first_is_float(df)
+            output_feature[key] = df
             cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
         create_table_query = f"CREATE TABLE {table_name[key]} ({cols_with_types})"
-        cursor.execute(create_table_query)
+        connection.execute(create_table_query)
 
     column_number_feature = json.dumps(df_column_number_feature) if df_column_number_feature is not None else None
     column_text_feature = json.dumps(df_column_text_feature) if df_column_text_feature is not None else None
     target_column = json.dumps([df_target_column]) if df_target_column is not None else None
-    
-    # Establish a connection to the database
-    cursor = conn.cursor()
 
     # Prepare and execute the insertion query
-    cursor.execute(
+    connection.execute(
         """
         INSERT INTO feature_engineering_master (
             id,dataset, is_scale, null_method,
@@ -72,16 +71,16 @@ def insert_data(conn, dataset_name, df_output_features, is_scale, df_is_null, nu
         df = output_feature[key]
         if isinstance(df, pd.Series):
             column_name = transform_digits(remove_punctuation(df.name).replace(' ','_'))
-            insert_query = f"INSERT INTO {table_name[key]} ({column_name}) VALUES %s"
-            execute_values(cursor, insert_query, [(value,) for value in df])
+            insert_query = f"INSERT INTO {table_name[key]} ({column_name}) VALUES (%s)"
+            values_to_insert = [(value,) for value in df]
         else:
-            insert_query = f"INSERT INTO {table_name[key]} ({', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])}) VALUES %s"
-            execute_values(cursor, insert_query, df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist())
+            valid_columns = [col for col in df.columns if not col.startswith('Unnamed')]
+            column_names = ', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])
+            placeholders = ', '.join(['%s'] * len(valid_columns))
+            insert_query = f"INSERT INTO {table_name[key]} ({column_names}) VALUES ({placeholders})"
+            values_to_insert = df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist()
+        connection.execute(insert_query, values_to_insert)
     
-    # Commit the transactions and close the connection
-    conn.commit()
-    cursor.close()
-    conn.close()
     print("Data input successfully")
 
 def feature_engineering_page(st):
@@ -134,26 +133,23 @@ def feature_engineering_page(st):
                                     "nav-link-selected": {"color": "#FF7F00", "background-color": "rgba(128, 128, 128, 0.1)"}
     })
 
-    conn = psycopg2.connect(dbname='postgres', user=config['db_user'], password=config['db_password'], host=config['db_host'])
-    cursor = conn.cursor()
-
-    cursor.execute("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
+    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+    connection = engine.connect()
 
     # Create table if it doesn't exist
     create_table_query = """
     CREATE TABLE IF NOT EXISTS feature_engineering_master (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id VARCHAR(100),
         dataset VARCHAR(50),
         is_scale BOOLEAN,
         null_method VARCHAR(50) NULL,
         column_number_feature JSON NULL,
         column_text_feature JSON NULL,
         target_column JSON NULL,
-        prediction_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        prediction_at DATETIME
     );
     """
-    cursor.execute(create_table_query)
-    conn.commit()  # Commit the transaction
+    connection.execute(create_table_query)
     print("Database and table checked/created successfully.")
 
     # Setting engineering for Classification
@@ -357,7 +353,7 @@ def feature_engineering_page(st):
                     df_output_features = {
                         "ori":st.session_state['data']
                     }
-                insert_data(conn, is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
+                insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
                             dataset_name=st.session_state['data_name'])
                 st.success("Data saved into database")
@@ -560,7 +556,7 @@ def feature_engineering_page(st):
                     df_output_features = {
                         "ori":st.session_state['data']
                     }
-                insert_data(conn, is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
+                insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
                             dataset_name=st.session_state['data_name'])
                 st.success("Data saved into database")
@@ -695,7 +691,7 @@ def feature_engineering_page(st):
                     df_output_features = {
                         "ori":st.session_state['data']
                     }
-                insert_data(conn, is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
+                insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=None, df_output_features=df_output_features,
                             dataset_name=st.session_state['data_name'])
                 st.success("Data saved into database")

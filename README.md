@@ -80,3 +80,6 @@ uid, nama, datasets, time_stamp
 - try to run and access it
 - also access it using dbeaver for postgres
 - try to access some data from pds
+
+link starrocks: starrocks://ceger:ceger@10.184.0.9:9030/default_catalog.<database new name>
+10.184.0.9 | 10.184.0.10 | 10.184.0.10

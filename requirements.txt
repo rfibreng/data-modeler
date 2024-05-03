@@ -16,5 +16,6 @@ streamlit-option-menu==0.3.2
 pandas-geojson==1.2.0
 ydata_profiling==4.7.0
 streamlit-pandas-profiling==0.1.3
-psycopg2-binary
-psycopg2
+starrocks
+mysql-connector-python
+SQLAlchemy

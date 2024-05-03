@@ -1,5 +1,7 @@
 output_path: 'output'
 pds_data_path: 'datasets'
-db_host: 'postgresql'
-db_user: 'postgres'
-db_password: 'mysecretpassword'
+db_host: 'starrocks-fe-0'  # Use the service name of the StarRocks frontend from docker-compose.yml
+db_user: 'root'          # Default user for StarRocks; adjust as necessary
+db_password: ''  # Use a secure password as needed
+db_port: '9030'
+db_name: 'data_modeler'

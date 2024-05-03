@@ -160,11 +160,29 @@ def dtype_to_sql(dtype):
     if dtype == 'int64':
         return 'BIGINT'
     elif dtype == 'float64':
-        return 'DOUBLE PRECISION'
+        return 'DOUBLE'
     elif dtype == 'bool':
         return 'BOOLEAN'
     else:
         return 'TEXT'
+    
+def add_index_column_if_first_is_float(df):
+    """
+    Checks if the first column of the DataFrame is a float type.
+    If it is, adds a new column at the start of the DataFrame with an integer index starting at 1.
+
+    Args:
+    df (pd.DataFrame): The DataFrame to check and modify.
+
+    Returns:
+    pd.DataFrame: The modified DataFrame with a new index column added if the first column is float.
+    """
+    # Check if the first column is a float
+    first_column = df.columns[0]
+    if df[first_column].dtype == 'float' or df[first_column].dtype == 'float64':
+        # Add a new column with an integer index starting from 1
+        df.insert(0, 'index_column', range(1, len(df) + 1))
+    return df
     
 def transform_digits(text):
     if text.isdigit():
