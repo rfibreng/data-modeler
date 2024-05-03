@@ -37,11 +37,12 @@ def insert_data(df, dataset_name, model_description):
     )
 
     # Insert DataFrame data into the newly created table using psycopg2's execute_values for bulk insertion
-    column_names = ', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])
-    placeholders = ', '.join(['%s'] * len(valid_columns))
-    insert_query = f"INSERT INTO {table_name} ({column_names}) VALUES ({placeholders})"
-    values_to_insert = df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist()
-    connection.execute(insert_query, values_to_insert)
+    # Filter out columns starting with 'Unnamed'
+    df = df[[col for col in df.columns if not col.startswith('Unnamed')]]
+
+    # Transform column names
+    df.columns = [transform_digits(remove_punctuation(col)) for col in df.columns]
+    df.to_sql(table_name, con=engine, index=False, if_exists='append', method='multi')
     
     print("Data input successfully")
 
