@@ -39,13 +39,14 @@ def insert_data(dataset_name, dataframe):
             sql_type = dtype_to_sql(df.dtype.name)
             col_with_type = f"{clean_name} {sql_type}"
             print(col_with_type)
+            create_table_query = f"CREATE TABLE {table_name[key]} ({col_with_type})"
         else:
             valid_columns = [col for col in df.columns if not col.startswith('Unnamed')]
             df = df[valid_columns]
             df = add_index_column_if_first_is_float(df)
             data_insert[key] = df
             cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
-        create_table_query = f"CREATE TABLE {table_name[key]} ({cols_with_types})"
+            create_table_query = f"CREATE TABLE {table_name[key]} ({cols_with_types})"
         connection.execute(create_table_query)
     
     # Count variables (columns) and observations (rows)

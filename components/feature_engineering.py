@@ -37,15 +37,11 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
         output_feature['isnull'] = is_null.to_frame().T
 
     for key in table_name.keys():
-        st.write(key)
         df = output_feature[key]
-        st.write(df, df.shape)
         if isinstance(df, pd.Series):
-            st.write('Series')
             clean_name = transform_digits(remove_punctuation(df.name).replace(' ','_'))
             sql_type = dtype_to_sql(df.dtype.name)
             col_with_type = f"{clean_name} {sql_type}"
-            st.write(col_with_type)
             create_table_query = f"CREATE TABLE {table_name[key]} ({col_with_type})"
             print(col_with_type)
         else:
@@ -54,9 +50,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
             df = add_index_column_if_first_is_float(df)
             output_feature[key] = df
             cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
-            st.write(cols_with_types)
             create_table_query = f"CREATE TABLE {table_name[key]} ({cols_with_types})"
-        st.write(create_table_query)
         connection.execute(create_table_query)
 
     column_number_feature = json.dumps(df_column_number_feature) if df_column_number_feature is not None else None
@@ -87,7 +81,6 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
             placeholders = ', '.join(['%s'] * len(valid_columns))
             insert_query = f"INSERT INTO {table_name[key]} ({column_names}) VALUES ({placeholders})"
             values_to_insert = df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist()
-        st.write(insert_query, values_to_insert)
         connection.execute(insert_query, values_to_insert)
     
     print("Data input successfully")
