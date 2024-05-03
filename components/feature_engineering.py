@@ -86,7 +86,9 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
         connection.execute(insert_query, values_to_insert)
     
     print("Data input successfully")
-    st.success(f"Data saved into database with table name:{','.join([table_name[key] for key in table_name.keys()])}")
+    st.success(f"Data saved into database with table name:")
+    for key in table_name.keys():
+        st.write(table_name[key])
 
 def feature_engineering_page(st):
     st.markdown("<h2 class='menu-title'>Feature Engineering</h2>",
@@ -361,7 +363,7 @@ def feature_engineering_page(st):
                 insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
                             dataset_name=st.session_state['data_name'])
-                st.success("Data saved into database")
+                
 
         else:
             st.write("")
@@ -564,7 +566,7 @@ def feature_engineering_page(st):
                 insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
                             dataset_name=st.session_state['data_name'])
-                st.success("Data saved into database")
+                
         else:
             st.write("")
 
@@ -699,4 +701,4 @@ def feature_engineering_page(st):
                 insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
                             df_column_text_feature=feature_column_text, df_target_column=None, df_output_features=df_output_features,
                             dataset_name=st.session_state['data_name'])
-                st.success("Data saved into database")
+                
