@@ -116,7 +116,7 @@ def data_exploration_page(st):
 
     # Showing the uploaded file from session state
     # try:
-    st.write(st.session_state.uploaded_file)
+    st.write(st.session_state.uploaded_file.iloc[:100000])
     st.success("The data have been successfully uploaded")
 
     # Initiating pandas profiling
