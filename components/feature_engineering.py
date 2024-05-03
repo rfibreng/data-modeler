@@ -67,19 +67,17 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
          column_number_feature, column_text_feature, target_column, datetime.now())
     )
 
-    for key in table_name.keys():
+    for key in output_feature:
         df = output_feature[key]
         if isinstance(df, pd.Series):
-            column_name = transform_digits(remove_punctuation(df.name).replace(' ','_'))
-            insert_query = f"INSERT INTO {table_name[key]} ({column_name}) VALUES (%s)"
-            values_to_insert = [(value,) for value in df]
+            df = df.to_frame(name=transform_digits(remove_punctuation(df.name).replace(' ', '_')))
         else:
-            valid_columns = [col for col in df.columns if not col.startswith('Unnamed')]
-            column_names = ', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])
-            placeholders = ', '.join(['%s'] * len(valid_columns))
-            insert_query = f"INSERT INTO {table_name[key]} ({column_names}) VALUES ({placeholders})"
-            values_to_insert = df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist()
-        connection.execute(insert_query, values_to_insert)
+            # Filter columns that do not start with 'Unnamed' and transform column names
+            df = df[[col for col in df.columns if not col.startswith('Unnamed')]]
+            df.columns = [transform_digits(remove_punctuation(col).replace(' ', '_')) for col in df.columns]
+
+        # Use the `to_sql` method for both pd.Series and pd.DataFrame to insert data
+        df.to_sql(table_name[key], con=engine, index=False, if_exists='append', method='multi')
     
     print("Data input successfully")
 
