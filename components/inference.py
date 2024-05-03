@@ -165,8 +165,6 @@ def inference_page(st):
                 # Adding cluster into data
                 dataframe['Prediction'] = clusters
 
-                model_name = task_selected + '-' + model_name
-
                 insert_data(dataframe, uploaded_file.name, model_name)  # Specify your dataset name and model description
 
                 # Adding one space
