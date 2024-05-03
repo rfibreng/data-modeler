@@ -160,7 +160,7 @@ def dtype_to_sql(dtype):
     if dtype == 'int64':
         return 'BIGINT'
     elif dtype == 'float64':
-        return 'DOUBLE'
+        return 'TEXT'
     elif dtype == 'bool':
         return 'BOOLEAN'
     else:
