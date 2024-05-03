@@ -38,8 +38,8 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
 
     for key in table_name.keys():
         st.write(key)
-        st.write(df[key], df[key].shape)
         df = output_feature[key]
+        st.write(df, df.shape)
         if isinstance(df, pd.Series):
             clean_name = transform_digits(remove_punctuation(df.name).replace(' ','_'))
             sql_type = dtype_to_sql(df.dtype.name)
