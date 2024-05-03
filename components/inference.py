@@ -149,7 +149,7 @@ def inference_page(st):
     st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("Make Prediction"):
-            # try:
+            try:
                 if isinstance(model, Pipeline):
                     if isinstance(model[1], DBSCAN) or isinstance(model[1],AgglomerativeClustering):
                         clusters = model.fit_predict(dataframe)
@@ -174,5 +174,5 @@ def inference_page(st):
                             unsafe_allow_html=True)
                 st.write(dataframe)
                 st.write("- The shape of data", dataframe.shape)
-            # except:
-            #     st.warning("The model is not for that data, please make sure that the data is fitted with the model")
+            except:
+                st.warning("The model is not for that data, please make sure that the data is fitted with the model")
