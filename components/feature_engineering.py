@@ -11,6 +11,7 @@ from util import config, remove_punctuation
 from datetime import datetime
 import uuid
 import pandas as pd
+import streamlit as st
 
 def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_method, df_column_number_feature, df_column_text_feature, df_target_column):
     # Convert DataFrames to JSON strings as necessary
@@ -36,6 +37,8 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
         output_feature['isnull'] = is_null.to_frame().T
 
     for key in table_name.keys():
+        st.write(key)
+        st.write(df[key], df[key].shape)
         df = output_feature[key]
         if isinstance(df, pd.Series):
             clean_name = transform_digits(remove_punctuation(df.name).replace(' ','_'))
