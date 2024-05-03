@@ -25,7 +25,7 @@ def get_data(X):
     try:
         df = pd.read_csv(X)
     except:
-        df = pd.read_csv(X, encoding='latin1',errors='ignore')
+        df = pd.read_csv(X, encoding='latin1')
     return df
 
 
