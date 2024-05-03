@@ -86,7 +86,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
         connection.execute(insert_query, values_to_insert)
     
     print("Data input successfully")
-    st.success(f"Data saved into database with table name:\n{'\n'.join([table_name[key] for key in table_name.keys()])}")
+    st.success(f"Data saved into database with table name:{','.join([table_name[key] for key in table_name.keys()])}")
 
 def feature_engineering_page(st):
     st.markdown("<h2 class='menu-title'>Feature Engineering</h2>",
