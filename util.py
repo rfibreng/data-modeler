@@ -113,31 +113,31 @@ def prev_page_inference(st):
 
 def process_data(uploaded_file, option_selected):
     if uploaded_file is not None:
-        # try:
-        # Uploading Dataframe
-        dataframe = get_data(uploaded_file)
+        try:
+            # Uploading Dataframe
+            dataframe = get_data(uploaded_file)
 
-        # Initiating data on session state
-        if "data" not in st.session_state:
-            st.session_state['data'] = dataframe
-            st.session_state['uploaded_file'] = dataframe
-            if option_selected == "Upload":
-                st.session_state['data_name'] = uploaded_file.name
-            else:
-                st.session_state['data_name'] = uploaded_file.split('/')[-1]
-        else:
-            if st.button('Update Data'):
+            # Initiating data on session state
+            if "data" not in st.session_state:
                 st.session_state['data'] = dataframe
-                st.session_state['uploaded_file'] = dataframe   
+                st.session_state['uploaded_file'] = dataframe
                 if option_selected == "Upload":
                     st.session_state['data_name'] = uploaded_file.name
                 else:
                     st.session_state['data_name'] = uploaded_file.split('/')[-1]
+            else:
+                if st.button('Update Data'):
+                    st.session_state['data'] = dataframe
+                    st.session_state['uploaded_file'] = dataframe   
+                    if option_selected == "Upload":
+                        st.session_state['data_name'] = uploaded_file.name
+                    else:
+                        st.session_state['data_name'] = uploaded_file.split('/')[-1]
 
-        # except Exception as e:
-        #     print("waduh: ",e)
-        #     st.markdown("<span class='info-box'>Please upload any data</span>",
-        #                 unsafe_allow_html=True)
+        except Exception as e:
+            print("waduh: ",e)
+            st.markdown("<span class='info-box'>Please upload any data</span>",
+                        unsafe_allow_html=True)
 
 def data_uploader_components(st):
     option_selected = st.selectbox("Data Source", ['Upload','PDS'])
