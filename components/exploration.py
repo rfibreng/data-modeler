@@ -109,23 +109,23 @@ def data_exploration_page(st):
     data_uploader_components(st)
 
     # Showing the uploaded file from session state
-    # try:
-    st.write(st.session_state.uploaded_file)
-    st.success("The data have been successfully uploaded")
+    try:
+        st.write(st.session_state.uploaded_file)
+        st.success("The data have been successfully uploaded")
 
-    # Initiating pandas profiling
-    if st.button('Plot the Data Exploration'):
-        pr = st.session_state.uploaded_file.profile_report()
-        st_profile_report(pr)
+        # Initiating pandas profiling
+        if st.button('Plot the Data Exploration'):
+            pr = st.session_state.uploaded_file.profile_report()
+            st_profile_report(pr)
 
-    if st.button("Save the Data"):
-        insert_data(st.session_state['data_name'], st.session_state["uploaded_file"])
-        st.success("Data saved into database")
-    else:
-        st.write("")
-    # except Exception as e:
-    #     print(e)
-    #     st.markdown("<span class='info-box'>Please upload any data</span>",
-    #                 unsafe_allow_html=True)
+        if st.button("Save the Data"):
+            insert_data(st.session_state['data_name'], st.session_state["uploaded_file"])
+            st.success("Data saved into database")
+        else:
+            st.write("")
+    except Exception as e:
+        print(e)
+        st.markdown("<span class='info-box'>Please upload any data</span>",
+                    unsafe_allow_html=True)
 
     st.write("")
