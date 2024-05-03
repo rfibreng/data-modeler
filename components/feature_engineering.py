@@ -85,6 +85,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
             placeholders = ', '.join(['%s'] * len(valid_columns))
             insert_query = f"INSERT INTO {table_name[key]} ({column_names}) VALUES ({placeholders})"
             values_to_insert = df[[col for col in df.columns if not col.startswith('Unnamed')]].values.tolist()
+        st.write(insert_query, values_to_insert)
         connection.execute(insert_query, values_to_insert)
     
     print("Data input successfully")
