@@ -45,7 +45,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
             create_table_query = f"CREATE TABLE {table_name[key]} ({col_with_type})"
             print(col_with_type)
         else:
-            df.columns = [transform_digits(remove_punctuation(col).replace(' ', '_')) for col in df.columns]
+            df.columns = [transform_digits(remove_punctuation(str(col)).replace(' ', '_')) for col in df.columns]
             valid_columns = [col for col in df.columns if not col.startswith('Unnamed')]
             df = df[valid_columns]
             df = add_index_column_if_first_is_float(df)
@@ -77,7 +77,7 @@ def insert_data(dataset_name, df_output_features, is_scale, df_is_null, null_met
             insert_query = f"INSERT INTO {table_name[key]} ({column_name}) VALUES (%s)"
             values_to_insert = [(value,) for value in df]
         else:
-            df.columns = [transform_digits(remove_punctuation(col).replace(' ', '_')) for col in df.columns]
+            df.columns = [transform_digits(remove_punctuation(str(col)).replace(' ', '_')) for col in df.columns]
             valid_columns = [col for col in df.columns if not col.startswith('Unnamed')]
             column_names = ', '.join([transform_digits(remove_punctuation(col).replace(' ','_')) for col in df.columns if not col.startswith('Unnamed')])
             placeholders = ', '.join(['%s'] * len(valid_columns))
