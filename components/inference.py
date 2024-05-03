@@ -38,7 +38,7 @@ def insert_data(df, dataset_name, model_description):
 
     # Insert DataFrame data into the newly created table using psycopg2's execute_values for bulk insertion
     # Filter out columns starting with 'Unnamed'
-    df = df[[col for col in df.columns if not col.startswith('Unnamed')]]
+    df = df[[col for col in df.columns if not str(col).startswith('Unnamed')]]
 
     # Transform column names
     df.columns = [transform_digits(remove_punctuation(col)) for col in df.columns]
