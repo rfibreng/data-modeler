@@ -26,7 +26,7 @@ def insert_data(df, dataset_name, model_description):
     df = add_index_column_if_first_is_float(df)
     
     # Create a new table based on the structure of df
-    cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(col).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
+    cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(str(col)).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
     create_table_query = f"CREATE TABLE {table_name} ({cols_with_types})"
     connection.execute(create_table_query)
 
@@ -149,7 +149,7 @@ def inference_page(st):
     st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("Make Prediction"):
-            try:
+            # try:
                 if isinstance(model, Pipeline):
                     if isinstance(model[1], DBSCAN) or isinstance(model[1],AgglomerativeClustering):
                         clusters = model.fit_predict(dataframe)
@@ -174,5 +174,5 @@ def inference_page(st):
                             unsafe_allow_html=True)
                 st.write(dataframe)
                 st.write("- The shape of data", dataframe.shape)
-            except:
-                st.warning("The model is not for that data, please make sure that the data is fitted with the model")
+            # except:
+            #     st.warning("The model is not for that data, please make sure that the data is fitted with the model")
