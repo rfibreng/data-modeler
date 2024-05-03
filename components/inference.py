@@ -9,6 +9,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, String, DateTime
 from datetime import datetime
 import uuid
 import pandas as pd
+import streamlit as st
 
 def insert_data(df, dataset_name, model_description):
     engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
@@ -45,6 +46,7 @@ def insert_data(df, dataset_name, model_description):
     df.to_sql(table_name, con=engine, index=False, if_exists='append', method='multi')
     
     print("Data input successfully")
+    st.success(f"Data saved into database with table name: {table_name}")
 
 def inference_page(st):
 
