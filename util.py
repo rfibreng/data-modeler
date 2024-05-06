@@ -12,6 +12,7 @@ import pickle
 import yaml
 import string
 import random
+import streamlit as st
 
 def remove_punctuation(text):
     # Create a translation table that maps each punctuation character to None
@@ -21,8 +22,8 @@ def remove_punctuation(text):
 
 # Caching data for dataframe
 @st.cache_data
-def get_data(X):
-    df = pd.read_csv(X, encoding='ISO-8859-1', on_bad_lines='skip')
+def get_data(X, delimiter=','):
+    df = pd.read_csv(X, encoding='ISO-8859-1', on_bad_lines='skip', delimiter=delimiter)
     return df
 
 
@@ -111,11 +112,11 @@ def next_page_inference(st):
 def prev_page_inference(st):
     st.session_state.current_page_inference-=1
 
-def process_data(uploaded_file, option_selected):
+def process_data(uploaded_file, option_selected, delimiter):
     if uploaded_file is not None:
         # try:
             # Uploading Dataframe
-            dataframe = get_data(uploaded_file)
+            dataframe = get_data(uploaded_file, delimiter)
 
             # Initiating data on session state
             if "data" not in st.session_state:
@@ -141,7 +142,7 @@ def process_data(uploaded_file, option_selected):
 
 def data_uploader_components(st):
     option_selected = st.selectbox("Data Source", ['Upload','PDS'])
-
+    delimiter = st.text_input('delimiter', value=',')
     uploaded_file = None
     if option_selected == "Upload":
         uploaded_file = st.file_uploader("Choose a file to upload for training data",
@@ -156,7 +157,7 @@ def data_uploader_components(st):
             # Filter and add CSV files to data_list
             data_list.extend([os.path.join(dirpath, file) for file in filenames if file.endswith('.csv')])
         uploaded_file = st.selectbox("Data",data_list)
-    process_data(uploaded_file, option_selected)
+    process_data(uploaded_file, option_selected, delimiter)
     
 def dtype_to_sql(dtype):
     if dtype == 'int64':
