@@ -173,6 +173,14 @@ def modeling_page(st):
                                     "nav-link": {"font-size": "15px", "text-align": "left", "margin": "0px", "--hover-color": "#444444", "text-align-last": "center"},
                                     "nav-link-selected": {"color": "#FF7F00", "background-color": "rgba(128, 128, 128, 0.1)"}
     })
+    if task_selected == "Classification":
+        st.write("Classification is a Machine Learning task where the model learns from the data to assign a category label to each data point.")
+
+    elif task_selected == "Regression":
+        st.write("Regression is a type of Machine Learning that estimates relationships among variables. It is used when the target, or dependent variable, is continuous.")
+
+    elif task_selected == "Clustering":
+        st.write("Clustering is a Machine Learning technique that involves grouping a set of objects in such a way that objects in the same group (a cluster) are more similar to each other than to those in other groups.")
 
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
