@@ -74,7 +74,7 @@ set_png_as_page_bg('assets/bg.png')
 
 # Logo in side bar configuration
 st.sidebar.image("assets/eyre.png",
-                 output_format='PNG', width=50)
+                 output_format='PNG', width=200)
 
 # Sidebar Menu
 with st.sidebar:
