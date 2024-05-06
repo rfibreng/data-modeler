@@ -114,7 +114,7 @@ def prev_page_inference(st):
 
 def process_data(uploaded_file, option_selected, delimiter):
     if uploaded_file is not None:
-        # try:
+        try:
             # Uploading Dataframe
             dataframe = get_data(uploaded_file, delimiter)
 
@@ -135,10 +135,10 @@ def process_data(uploaded_file, option_selected, delimiter):
                     else:
                         st.session_state['data_name'] = uploaded_file.split('/')[-1]
 
-        # except Exception as e:
-        #     print("waduh: ",e)
-        #     st.markdown("<span class='info-box'>Please upload any data</span>",
-        #                 unsafe_allow_html=True)
+        except Exception as e:
+            print("waduh: ",e)
+            st.markdown("<span class='info-box'>Please upload any data</span>",
+                        unsafe_allow_html=True)
 
 def data_uploader_components(st):
     option_selected = st.selectbox("Data Source", ['Upload','PDS'])
