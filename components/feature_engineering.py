@@ -196,7 +196,7 @@ def feature_engineering_page(st):
                 st.markdown("<br>", unsafe_allow_html=True)
                 target_column = st.selectbox("Select column to be the target",
                                              st.session_state.data.columns)
-                st.write("target column is the the target that to be trained by machine learning system")
+                st.write("target column is the target that to be trained by machine learning system")
 
             col3, col4 = st.columns(2)
 
@@ -409,7 +409,7 @@ def feature_engineering_page(st):
                 st.markdown("<br>", unsafe_allow_html=True)
                 target_column = st.selectbox("Select column to be the target",
                                              st.session_state.data.columns)
-                st.write("target column is the the target that to be trained by machine learning system")
+                st.write("target column is the target that to be trained by machine learning system")
 
             col3, col4 = st.columns(2)
 
