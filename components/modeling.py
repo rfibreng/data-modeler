@@ -44,32 +44,51 @@ def show_data_prediction(data_train_full_prediction, data_test_full_prediction=N
                     data_test_full_prediction.shape)
     
 def show_classification_report(classification_report_train, classification_report_test):
-    st.markdown("<h4 class='menu-secondary'>Train Score</h4>",
-                                unsafe_allow_html=True)
+    st.markdown("<h4 class='menu-secondary'>Train Score</h4>", unsafe_allow_html=True)
     st.write(classification_report_train, help="A classification report shows key metrics in assessing the performance of a classification model. This includes precision, recall, f1-score, and support for each class.")
     
-    st.markdown("<h4 class='menu-secondary'>Test Score</h4>",
-                unsafe_allow_html=True)
+    st.markdown("<h4 class='menu-secondary'>Test Score</h4>", unsafe_allow_html=True)
     st.write(classification_report_test, help="A classification report shows key metrics in assessing the performance of a classification model. This includes precision, recall, f1-score, and support for each class.")
 
+    # Additional explanations for the metrics
+    st.markdown("### Metric Definitions:")
+    st.write("**Precision:** Precision is the ratio of correctly predicted positive observations to the total predicted positives. It is a measure of a classifier's exactness. High precision relates to the low false positive rate.")
+    st.write("**Recall:** Recall is the ratio of correctly predicted positive observations to the all observations in actual class. It is a measure of a classifier's completeness. High recall indicates that the class is correctly recognized (low false negative rate).")
+    st.write("**F1 Score:** The F1 Score is the weighted average of Precision and Recall. Therefore, this score takes both false positives and false negatives into account. It is particularly useful when the classes are imbalanced. The F1 score is the harmonic mean of Precision and Recall.")
+
+import streamlit as st
+
 def show_roc_auc_report(roc_auc_train, roc_auc_test):
-    st.markdown("<h5 class='menu-secondary'>Train ROC-AUC Score</h5>",
-                                unsafe_allow_html=True)
+    st.markdown("<h5 class='menu-secondary'>Train ROC-AUC Score</h5>", unsafe_allow_html=True)
     st.write(roc_auc_train)
-    st.markdown("<h5 class='menu-secondary'>Test ROC-AUC Score</h5>",
-                unsafe_allow_html=True)
+    st.markdown("<h5 class='menu-secondary'>Test ROC-AUC Score</h5>", unsafe_allow_html=True)
     st.write(roc_auc_test)
 
+    # Explanation for ROC-AUC
+    st.markdown("### ROC-AUC Explanation:")
+    st.write("""
+    **ROC-AUC (Receiver Operating Characteristic - Area Under Curve):** This metric is used to measure the effectiveness of a classification model at distinguishing between classes. The ROC is a probability curve that plots the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. The AUC represents the degree or measure of separability. It tells how much the model is capable of distinguishing between classes. Higher AUC values indicate better model performance.
+    """)
+
 def show_confussion_matrix(cm, label_target):
-    st.markdown("<h4 class='menu-secondary'>Confusion Matrix Score</h4>",
-                                unsafe_allow_html=True)
+    st.markdown("<h4 class='menu-secondary'>Confusion Matrix Score</h4>", unsafe_allow_html=True)
 
     # Showing Confusion Matrix Display
     fig, ax = plt.subplots(figsize=(6, 6))
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm,
-                                    display_labels=label_target)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label_target)
     disp.plot()
-    st.pyplot(plt.show())
+    st.pyplot(plt)
+
+    # Explanation for Confusion Matrix
+    st.markdown("### Confusion Matrix Explanation:")
+    st.write("""
+    The Confusion Matrix is a visualization tool primarily used to show the performance of a classification model. The matrix displays the actual labels vs. the labels predicted by the model, allowing users to identify how many predictions were correctly or incorrectly made for each class. Here's what each term represents:
+    - **True Positives (TP):** The number of correct predictions that an instance is positive.
+    - **True Negatives (TN):** The number of correct predictions that an instance is negative.
+    - **False Positives (FP):** The number of incorrect predictions that an instance is positive (also known as Type I error).
+    - **False Negatives (FN):** The number of incorrect predictions that an instance is negative (also known as Type II error).
+    Understanding the distribution of these values can help diagnose the performance characteristics of the model, especially in terms of its precision, recall, and overall accuracy.
+    """)
 
 def show_classification_metrics(data_train_full_prediction, data_test_full_prediction,
                            classification_report_train, classification_report_test,
@@ -106,28 +125,36 @@ def show_regression_metrics(data_train_full_prediction, data_test_full_predictio
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Showing mean absolute score
-    with st.expander("Show Mean Absolute Score"):
+    # Showing mean absolute error
+    with st.expander("Show Mean Absolute Error"):
         st.write("Train Score")
         st.write(mae_train)
         st.write("Test Score")
         st.write(mae_test)
+        # Explanation for MAE
+        st.markdown("### Mean Absolute Error (MAE) Explanation:")
+        st.write("""
+        Mean Absolute Error (MAE) is a measure of errors between paired observations expressing the same phenomenon. Comparing predictions and outcomes, MAE is the average of the absolute differences between the predicted values and actual values without considering the direction. It's a linear score which means all individual differences are weighted equally. It's particularly useful in regression and forecasting models.
+        """)
 
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Showing score of MSE
-    with st.expander("Show Mean Squarred Score"):
+    # Showing mean squared error
+    with st.expander("Show Mean Squared Error"):
         st.write("Train Score")
         st.write(mse_train)
         st.write("Test Score")
         st.write(mse_test)
+        # Explanation for MSE
+        st.markdown("### Mean Squared Error (MSE) Explanation:")
+        st.write("""
+        Mean Squared Error (MSE) is a risk metric that calculates the average of the squares of the errors—that is, the average squared difference between the estimated values and the actual value. MSE gives a higher weight to larger errors due to the squaring of each term, which can be particularly important in real-world contexts where large errors are particularly undesirable.
+        """)
 
-    # Giving two spaces
+    # Giving three spaces
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-
-    # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
 
 def show_clustering_metrics(data_full_clustered, calinski_harabasz, davies_bouldin):
@@ -144,12 +171,22 @@ def show_clustering_metrics(data_full_clustered, calinski_harabasz, davies_bould
 
         st.write("Calinski-Harabasz Index")
         st.write(calinski_harabasz)
+        # Explanation for Calinski-Harabasz Index
+        st.markdown("### Calinski-Harabasz Index Explanation:")
+        st.write("""
+        The Calinski-Harabasz Index, also known as the CH Score, measures the quality of clustering. It is calculated as the ratio of the sum of between-clusters dispersion and of within-cluster dispersion for all clusters. The higher the CH Score, the better the clustering performance, indicating clusters are well-separated and dense.
+        """)
 
         # Adding one space
         st.markdown("<br>", unsafe_allow_html=True)
 
         st.write("Davies-Bouldin Index")
         st.write(davies_bouldin)
+        # Explanation for Davies-Bouldin Index
+        st.markdown("### Davies-Bouldin Index Explanation:")
+        st.write("""
+        The Davies-Bouldin Index is a measure of clustering validation. It evaluates clustering algorithms by calculating the average 'similarity' between each cluster and its most similar cluster, where similarity is a measure that compares the distance between clusters with the size of the clusters themselves. Lower values of the index indicate better clustering performance, reflecting clusters with less overlap.
+        """)
 
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
