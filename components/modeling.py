@@ -46,10 +46,11 @@ def show_data_prediction(data_train_full_prediction, data_test_full_prediction=N
 def show_classification_report(classification_report_train, classification_report_test):
     st.markdown("<h4 class='menu-secondary'>Train Score</h4>",
                                 unsafe_allow_html=True)
-    st.write(classification_report_train)
+    st.write(classification_report_train, help="A classification report shows key metrics in assessing the performance of a classification model. This includes precision, recall, f1-score, and support for each class.")
+    
     st.markdown("<h4 class='menu-secondary'>Test Score</h4>",
                 unsafe_allow_html=True)
-    st.write(classification_report_test)
+    st.write(classification_report_test, help="A classification report shows key metrics in assessing the performance of a classification model. This includes precision, recall, f1-score, and support for each class.")
 
 def show_roc_auc_report(roc_auc_train, roc_auc_test):
     st.markdown("<h5 class='menu-secondary'>Train ROC-AUC Score</h5>",
