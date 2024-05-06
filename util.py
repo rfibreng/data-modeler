@@ -22,7 +22,7 @@ def remove_punctuation(text):
 # Caching data for dataframe
 @st.cache_data
 def get_data(X):
-    df = pd.read_csv(X, encoding='ISO-8859-1')
+    df = pd.read_csv(X, encoding='ISO-8859-1', on_bad_lines='skip')
     return df
 
 
