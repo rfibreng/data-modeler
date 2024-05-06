@@ -142,7 +142,7 @@ def process_data(uploaded_file, option_selected, delimiter):
 
 def data_uploader_components(st):
     option_selected = st.selectbox("Data Source", ['Upload','PDS'])
-    delimiter = st.text_input('delimiter', value=',')
+    delimiter = st.selectbox('delimiter', [',',';'])
     uploaded_file = None
     if option_selected == "Upload":
         uploaded_file = st.file_uploader("Choose a file to upload for training data",
