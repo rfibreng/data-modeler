@@ -184,26 +184,29 @@ def feature_engineering_page(st):
             # Assigning option for feature column
             with col1:
                 st.markdown("<br>", unsafe_allow_html=True)
-                feature_column_number = st.multiselect("Select number column as feature",
+                feature_column_number = st.multiselect("Select numeric column as feature",
                                                        st.session_state.data.columns,
                                                        default=list(
                                                            st.session_state.data.columns),
                                                        placeholder="Select columns")
+                st.write("numerical feature is feature that contain numeric only")
 
              # Assigning option for target column
             with col2:
                 st.markdown("<br>", unsafe_allow_html=True)
                 target_column = st.selectbox("Select column to be the target",
                                              st.session_state.data.columns)
+                st.write("target column is the the target that to be trained by machine learning system")
 
             col3, col4 = st.columns(2)
 
             # Assigning option for target column
             with col3:
                 st.markdown("<br>", unsafe_allow_html=True)
-                feature_column_text = st.multiselect("Select text column as feature",
+                feature_column_text = st.multiselect("Select text/categorical column as feature",
                                                      st.session_state.data.columns,
                                                      default=None)
+                st.write("text/categorical feature is feature that contain categorical or text")
 
             with col4:
                 st.markdown("<br>", unsafe_allow_html=True)
@@ -394,26 +397,29 @@ def feature_engineering_page(st):
             # Assigning option for feature column
             with col1:
                 st.markdown("<br>", unsafe_allow_html=True)
-                feature_column_number = st.multiselect("Select number column as feature",
+                feature_column_number = st.multiselect("Select numeric column as feature",
                                                        st.session_state.data.columns,
                                                        default=list(
                                                            st.session_state.data.columns),
                                                        placeholder="Select columns")
+                st.write("numerical feature is feature that contain numeric only")
 
              # Assigning option for target column
             with col2:
                 st.markdown("<br>", unsafe_allow_html=True)
                 target_column = st.selectbox("Select column to be the target",
                                              st.session_state.data.columns)
+                st.write("target column is the the target that to be trained by machine learning system")
 
             col3, col4 = st.columns(2)
 
             # Assigning option for target column
             with col3:
                 st.markdown("<br>", unsafe_allow_html=True)
-                feature_column_text = st.multiselect("Select text column as feature",
+                feature_column_text = st.multiselect("Select text/categorical column as feature",
                                                      st.session_state.data.columns,
                                                      default=None)
+                st.write("text/categorical feature is feature that contain categorical or text")
 
             # Making column for showing features and target
             col5, col6 = st.columns([3, 1])
@@ -594,17 +600,19 @@ def feature_engineering_page(st):
 
             # Option menu of feature column for clustering
             with col1:
-                feature_column_number = st.multiselect("Select number column to be featured for Clustering",
+                feature_column_number = st.multiselect("Select numeric column to be featured for Clustering",
                                                        st.session_state.data.columns,
                                                        default=list(
                                                            st.session_state.data.columns),
                                                        placeholder="Select columns")
+                st.write("numerical feature is feature that contain numeric only")
 
             with col2:
-                feature_column_text = st.multiselect("Select text column to be featured for Clustering",
+                feature_column_text = st.multiselect("Select text/categorical column to be featured for Clustering",
                                                      st.session_state.data.columns,
                                                      default=None,
                                                      placeholder="Select columns")
+                st.write("text/categorical feature is feature that contain categorical or text")
 
             # Giving two spaces
             st.markdown("<br>", unsafe_allow_html=True)
