@@ -63,6 +63,11 @@ def show_regression_metrics_logger(data_train_full_prediction, data_test_full_pr
     st.write("Test Score")
     st.write(mae_test)
 
+    st.markdown("### Mean Absolute Error (MAE) Explanation:")
+    st.write("""
+    Mean Absolute Error (MAE) is a measure of errors between paired observations expressing the same phenomenon. Comparing predictions and outcomes, MAE is the average of the absolute differences between the predicted values and actual values without considering the direction. It's a linear score which means all individual differences are weighted equally. It's particularly useful in regression and forecasting models.
+    """)
+
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -71,6 +76,11 @@ def show_regression_metrics_logger(data_train_full_prediction, data_test_full_pr
     st.write(mse_train)
     st.write("Test Score")
     st.write(mse_test)
+
+    st.markdown("### Mean Squared Error (MSE) Explanation:")
+    st.write("""
+    Mean Squared Error (MSE) is a risk metric that calculates the average of the squares of the errors—that is, the average squared difference between the estimated values and the actual value. MSE gives a higher weight to larger errors due to the squaring of each term, which can be particularly important in real-world contexts where large errors are particularly undesirable.
+    """)
 
     # Giving two spaces
     st.markdown("<br>", unsafe_allow_html=True)
@@ -99,11 +109,21 @@ def show_clustering_metrics_logger(data_full_clustered, calinski_harabasz, davie
     st.write("Calinski-Harabasz Index")
     st.write(calinski_harabasz)
 
+    st.markdown("### Calinski-Harabasz Index Explanation:")
+    st.write("""
+    The Calinski-Harabasz Index, also known as the CH Score, measures the quality of clustering. It is calculated as the ratio of the sum of between-clusters dispersion and of within-cluster dispersion for all clusters. The higher the CH Score, the better the clustering performance, indicating clusters are well-separated and dense.
+    """)
+
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
 
     st.write("Davies-Bouldin Index")
     st.write(davies_bouldin)
+
+    st.markdown("### Davies-Bouldin Index Explanation:")
+    st.write("""
+    The Davies-Bouldin Index is a measure of clustering validation. It evaluates clustering algorithms by calculating the average 'similarity' between each cluster and its most similar cluster, where similarity is a measure that compares the distance between clusters with the size of the clusters themselves. Lower values of the index indicate better clustering performance, reflecting clusters with less overlap.
+    """)
 
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
