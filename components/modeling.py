@@ -27,6 +27,45 @@ from sklearn.metrics import roc_auc_score, mean_squared_error
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.metrics.cluster import calinski_harabasz_score, davies_bouldin_score
+from util import config, generate_random_alphanumeric, add_index_column_if_first_is_float, transform_digits, remove_punctuation, dtype_to_sql
+from sqlalchemy import create_engine
+
+def insert_data(df, dataset_name, model_description):
+    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+    connection = engine.connect()
+
+    # Generate a unique identifier
+    uid = generate_random_alphanumeric()
+    uid = str(uid).replace("-","")
+
+    # Construct table name
+    table_name = f"predictions_{uid}_{dataset_name.replace('.csv','')}"
+
+    valid_columns = [col for col in df.columns if not col.startswith('Unnamed')]
+    df = df[valid_columns]
+    df = add_index_column_if_first_is_float(df)
+    
+    # Create a new table based on the structure of df
+    cols_with_types = ", ".join([f"{transform_digits(remove_punctuation(str(col)).replace(' ','_'))} {dtype_to_sql(df[col].dtype.name)}" for col in df.columns if not col.startswith('Unnamed')])
+    create_table_query = f"CREATE TABLE {table_name} ({cols_with_types})"
+    connection.execute(create_table_query)
+
+    # Prepare and execute the insertion query for the main predictions_master table
+    connection.execute(
+        "INSERT INTO predictions_master (id, dataset, model_prediction, prediction_at) VALUES (%s, %s, %s, %s)",
+        (str(uid), dataset_name, model_description, datetime.now())
+    )
+
+    # Insert DataFrame data into the newly created table using psycopg2's execute_values for bulk insertion
+    # Filter out columns starting with 'Unnamed'
+    df = df[[col for col in df.columns if not str(col).startswith('Unnamed')]]
+
+    # Transform column names
+    df.columns = [transform_digits(remove_punctuation(col)) for col in df.columns]
+    df.to_sql(table_name, con=engine, index=False, if_exists='append', method='multi')
+    
+    print("Data input successfully")
+    st.success(f"Data saved into database with table name: {table_name}")
 
 def show_data_prediction(data_train_full_prediction, data_test_full_prediction=None):
     st.markdown("<h4 class='menu-secondary'>Train Data with Prediction</h4>",
@@ -210,6 +249,26 @@ def modeling_page(st):
                                     "nav-link": {"font-size": "15px", "text-align": "left", "margin": "0px", "--hover-color": "#444444", "text-align-last": "center"},
                                     "nav-link-selected": {"color": "#FF7F00", "background-color": "rgba(128, 128, 128, 0.1)"}
     })
+
+    try:
+        engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+        connection = engine.connect()
+
+        # Create table if it doesn't exist
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS predictions_master (
+            id VARCHAR(100),
+            dataset VARCHAR(50),
+            model_prediction VARCHAR(100),
+            prediction_at DATETIME
+        );
+        """
+        connection.execute(create_table_query)
+
+        print("Database and table checked/created successfully.")
+    except:
+        st.warning("Database is not connected please check is your database is on, or reload the page")
+
     if task_selected == "Classification":
         st.write("Classification is a Machine Learning task where the model learns from the data to assign a category label to each data point.")
 
@@ -225,6 +284,7 @@ def modeling_page(st):
     # Configuring Classification Task
     data_to_save = {"Experimentation": task_selected}
     if task_selected == "Classification":
+        is_train = False
         # Assigning scaled_data_train key
         if "scaled_data_train" not in st.session_state:
             st.session_state['scaled_data_train'] = ""
@@ -316,8 +376,8 @@ def modeling_page(st):
                 penalty=log_res_penalty, C=log_res_inverse, solver=log_res_solver)
 
             # Fitting Data to Logistic Regression Model
-            if st.button("Fit Data to Logistic Model"):
-                try:
+            try:
+                if st.button("Fit Data to Logistic Model"):
                     experiment_date = str(datetime.datetime.now())
                     data_to_save['experiment_date'] = experiment_date
                     # Initiating variable to fir data
@@ -328,7 +388,7 @@ def modeling_page(st):
 
                     # Fitting model to data
                     log_res_obj.fit(X_train, y_train)
-
+                    is_train = True
                     # Adding two spaces
                     st.markdown("<br>", unsafe_allow_html=True)
                     st.markdown("<br>", unsafe_allow_html=True)
@@ -434,10 +494,15 @@ def modeling_page(st):
                         ('preprocessor', st.session_state.preprocessor),
                         ('classifier', log_res_obj)
                     ])
-
-                    st.button("Save Result", on_click=lambda : save_result(data_to_save, task_selected, log_res_pipeline))
-                except Exception as e:
-                    st.warning("Cannot train your data, please upload your data and scale your data to train the model")
+                if is_train:
+                    if st.button("Save Result"):
+                        save_result(data_to_save, task_selected, log_res_pipeline)
+                        try:
+                            insert_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection)
+                        except:
+                            st.warning("Database is not connected please check is your database is on, or reload the page")
+            except Exception as e:
+                st.warning("Cannot train your data, please upload your data and scale your data to train the model")
                     
         # Setting Random Forest Classifier Model
         if model_selection == "Random Forest":

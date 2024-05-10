@@ -49,22 +49,24 @@ def insert_data(df, dataset_name, model_description):
     st.success(f"Data saved into database with table name: {table_name}")
 
 def inference_page(st):
+    try:
+        engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+        connection = engine.connect()
 
-    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
-    connection = engine.connect()
+        # Create table if it doesn't exist
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS predictions_master (
+            id VARCHAR(100),
+            dataset VARCHAR(50),
+            model_prediction VARCHAR(100),
+            prediction_at DATETIME
+        );
+        """
+        connection.execute(create_table_query)
 
-    # Create table if it doesn't exist
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS predictions_master (
-        id VARCHAR(100),
-        dataset VARCHAR(50),
-        model_prediction VARCHAR(100),
-        prediction_at DATETIME
-    );
-    """
-    connection.execute(create_table_query)
-
-    print("Database and table checked/created successfully.")
+        print("Database and table checked/created successfully.")
+    except:
+        st.warning("Database is not connected please check is your database is on, or reload the page")
 
     st.markdown("<h2 class='menu-title'>Load Model</h2>",
                 unsafe_allow_html=True)
