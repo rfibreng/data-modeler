@@ -88,29 +88,31 @@ def insert_data(dataset_name, dataframe):
     for key in table_name.keys():
         st.write(table_name[key])
 
-def data_exploration_page(st):
+def data_exploration_page(st:st):
     st.markdown("<h2 class='menu-title'>Data Exploration</h2>",
                 unsafe_allow_html=True)
     st.markdown("<h6 class='menu-subtitle'>Analyzing and visualizing a dataset to gain a deeper understanding of its characteristics, structure, and potential patterns</h6>",
                 unsafe_allow_html=True)
     st.markdown("<hr class='menu-divider' />",
                 unsafe_allow_html=True)
+    try:
+        engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+        connection = engine.connect()
 
-    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
-    connection = engine.connect()
-
-    # Create table if it doesn't exist
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS data_exploration_master (
-        id VARCHAR(100),
-        dataset VARCHAR(50),
-        variable_number INT,
-        observation_number INT,
-        created_at DATETIME
-    );
-    """
-    connection.execute(create_table_query)
-    print("Database and table checked/created successfully.")
+        # Create table if it doesn't exist
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS data_exploration_master (
+            id VARCHAR(100),
+            dataset VARCHAR(50),
+            variable_number INT,
+            observation_number INT,
+            created_at DATETIME
+        );
+        """
+        connection.execute(create_table_query)
+        print("Database and table checked/created successfully.")
+    except:
+        st.warning("Database is not connected please check is your database is on, or reload the page")
 
     data_uploader_components(st)
 
@@ -125,7 +127,10 @@ def data_exploration_page(st):
             st_profile_report(pr)
 
         if st.button("Save the Data"):
-            insert_data(st.session_state['data_name'], st.session_state["uploaded_file"])
+            try:
+                insert_data(st.session_state['data_name'], st.session_state["uploaded_file"])
+            except:
+                st.warning("Database is not connected please check is your database is on, or reload the page")
             
         else:
             st.write("")

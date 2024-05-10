@@ -167,8 +167,10 @@ def inference_page(st):
 
                 # Adding cluster into data
                 dataframe['Prediction'] = clusters
-
-                insert_data(dataframe, uploaded_file.name, model_name)  # Specify your dataset name and model description
+                try:
+                    insert_data(dataframe, uploaded_file.name, model_name)  # Specify your dataset name and model description
+                except:
+                    st.warning("Database is not connected please check is your database is on, or reload the page")
 
                 # Adding one space
                 st.markdown("<br>", unsafe_allow_html=True)

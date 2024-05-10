@@ -139,25 +139,27 @@ def feature_engineering_page(st):
                                     "nav-link": {"font-size": "15px", "text-align": "left", "margin": "0px", "--hover-color": "#444444", "text-align-last": "center"},
                                     "nav-link-selected": {"color": "#FF7F00", "background-color": "rgba(128, 128, 128, 0.1)"}
     })
+    try:
+        engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
+        connection = engine.connect()
 
-    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
-    connection = engine.connect()
-
-    # Create table if it doesn't exist
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS feature_engineering_master (
-        id VARCHAR(100),
-        dataset VARCHAR(50),
-        is_scale BOOLEAN,
-        null_method VARCHAR(50) NULL,
-        column_number_feature JSON NULL,
-        column_text_feature JSON NULL,
-        target_column JSON NULL,
-        prediction_at DATETIME
-    );
-    """
-    connection.execute(create_table_query)
-    print("Database and table checked/created successfully.")
+        # Create table if it doesn't exist
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS feature_engineering_master (
+            id VARCHAR(100),
+            dataset VARCHAR(50),
+            is_scale BOOLEAN,
+            null_method VARCHAR(50) NULL,
+            column_number_feature JSON NULL,
+            column_text_feature JSON NULL,
+            target_column JSON NULL,
+            prediction_at DATETIME
+        );
+        """
+        connection.execute(create_table_query)
+        print("Database and table checked/created successfully.")
+    except:
+        st.warning("Database is not connected please check is your database is on, or reload the page")
 
     # Setting engineering for Classification
     if task_selected == "Feature Engineering for Classification":
@@ -363,9 +365,12 @@ def feature_engineering_page(st):
                     df_output_features = {
                         "ori":st.session_state['data']
                     }
-                insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
-                            df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
-                            dataset_name=st.session_state['data_name'])
+                try:
+                    insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
+                                df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
+                                dataset_name=st.session_state['data_name'])
+                except:
+                    st.warning("Database is not connected please check is your database is on, or reload the page")
                 
 
         else:
@@ -569,9 +574,12 @@ def feature_engineering_page(st):
                     df_output_features = {
                         "ori":st.session_state['data']
                     }
-                insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
-                            df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
-                            dataset_name=st.session_state['data_name'])
+                try:
+                    insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
+                                df_column_text_feature=feature_column_text, df_target_column=target_column, df_output_features=df_output_features,
+                                dataset_name=st.session_state['data_name'])
+                except:
+                    st.warning("Database is not connected please check is your database is on, or reload the page")
                 
         else:
             st.write("")
@@ -706,7 +714,10 @@ def feature_engineering_page(st):
                     df_output_features = {
                         "ori":st.session_state['data']
                     }
-                insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
-                            df_column_text_feature=feature_column_text, df_target_column=None, df_output_features=df_output_features,
-                            dataset_name=st.session_state['data_name'])
+                try:
+                    insert_data(is_scale=is_scale, df_is_null=is_null, null_method=null_method, df_column_number_feature=feature_column_number, 
+                                df_column_text_feature=feature_column_text, df_target_column=None, df_output_features=df_output_features,
+                                dataset_name=st.session_state['data_name'])
+                except:
+                    st.warning("Database is not connected please check is your database is on, or reload the page")
                 
