@@ -501,10 +501,7 @@ def modeling_page(st):
                         ('preprocessor', st.session_state.preprocessor),
                         ('classifier', log_res_obj)
                     ])
-                try:
-                    st.button("Save Result", on_click= lambda : save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, log_res_pipeline))
-                except:
-                    st.warning("please fit the model first")
+                    save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, log_res_pipeline)
             except Exception as e:
                 st.warning("Cannot train your data, please upload your data and scale your data to train the model")
                     
@@ -666,7 +663,7 @@ def modeling_page(st):
                         ('classifier', rfc_obj)
                     ])
 
-                    st.button("Save Result", on_click=lambda : save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, rfc_pipeline))
+                    save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, rfc_pipeline)
                 except Exception as e:
                     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
 
@@ -872,7 +869,7 @@ def modeling_page(st):
                         ('classifier', svc_obj)
                     ])
 
-                    st.button("Save Result", on_click=lambda : save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, svc_pipeline))
+                    save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, svc_pipeline)
                 except Exception as e:
                     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
     # Configuring Regression Task
@@ -1054,7 +1051,7 @@ def modeling_page(st):
                         ('regressor', lin_reg_obj)
                     ])
 
-                    st.button("Save Result", on_click=lambda : save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, lin_reg_pipeline))
+                    save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, lin_reg_pipeline)
                 except Exception as e:
                     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
 
@@ -1185,7 +1182,7 @@ def modeling_page(st):
                         ('regressor', rfr_obj)
                     ])
 
-                    st.button("Save Result", on_click=lambda : save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, rfr_pipeline))
+                    save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, rfr_pipeline)
                 except Exception as e:
                     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
 
@@ -1367,7 +1364,7 @@ def modeling_page(st):
                         ('regressor', svm_obj)
                     ])
 
-                    st.button("Save Result", on_click=lambda : save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, svm_pipeline))
+                    save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, svm_pipeline)
                 except Exception as e:
                     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
 
@@ -1551,7 +1548,7 @@ def modeling_page(st):
                         ('kmeans', pipe_kmeans)
                     ])
 
-                    st.button("Save Result", on_click=lambda : save_data(data_full_clustered, st.session_state['data_name'], model_selection, data_to_save, task_selected, kmeans_pipeline_complete))
+                    save_data(data_full_clustered, st.session_state['data_name'], model_selection, data_to_save, task_selected, kmeans_pipeline_complete)
                 except Exception as e:
                     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
 
@@ -1679,7 +1676,7 @@ def modeling_page(st):
                         ('dbscan', pipe_dbscan)
                     ])
 
-                    st.button("Save Result", on_click=lambda : save_data(data_full_clustered, st.session_state['data_name'], model_selection, data_to_save, task_selected, dbscan_pipeline_complete))
+                    save_data(data_full_clustered, st.session_state['data_name'], model_selection, data_to_save, task_selected, dbscan_pipeline_complete)
                 except:
                     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
 
@@ -1774,6 +1771,6 @@ def modeling_page(st):
                         ('agglomerative', pipe_agglomerative)
                     ])
 
-                    st.button("Save Result", on_click=lambda : save_data(data_full_clustered, st.session_state['data_name'], model_selection, data_to_save, task_selected, agglomerative_pipeline_complete))
+                    save_data(data_full_clustered, st.session_state['data_name'], model_selection, data_to_save, task_selected, agglomerative_pipeline_complete)
                 except Exception as e:
                     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
