@@ -94,9 +94,12 @@ with st.sidebar:
 # Configuring home menu
 if menu_selected == "Home":
     # st.write("Welcome")
-    engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}")
-    connection = engine.connect()
-    connection.execute(f"CREATE DATABASE IF NOT EXISTS {config['db_name']};")
+    try:
+        engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}")
+        connection = engine.connect()
+        connection.execute(f"CREATE DATABASE IF NOT EXISTS {config['db_name']};")
+    except:
+        st.warning("Database is not connected please check is your database is on, or reload the page")
     st.image("assets/header.png",
              output_format='PNG')
 
