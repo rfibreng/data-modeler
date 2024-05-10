@@ -30,6 +30,13 @@ from sklearn.metrics.cluster import calinski_harabasz_score, davies_bouldin_scor
 from util import config, generate_random_alphanumeric, add_index_column_if_first_is_float, transform_digits, remove_punctuation, dtype_to_sql
 from sqlalchemy import create_engine
 
+def save_data(df, dataset_name, model_description, data_to_save, task_selected, model_pipeline):
+    save_result(data_to_save, task_selected, model_pipeline)
+    try:
+        insert_data(df, dataset_name, model_description)
+    except:
+        st.warning("Database is not connected please check is your database is on, or reload the page")
+
 def insert_data(df, dataset_name, model_description):
     engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
     connection = engine.connect()
@@ -494,13 +501,7 @@ def modeling_page(st):
                         ('preprocessor', st.session_state.preprocessor),
                         ('classifier', log_res_obj)
                     ])
-                if is_train:
-                    if st.button("Save Result"):
-                        save_result(data_to_save, task_selected, log_res_pipeline)
-                        try:
-                            insert_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection)
-                        except:
-                            st.warning("Database is not connected please check is your database is on, or reload the page")
+                    st.button("Save Result", on_click= lambda : save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, log_res_pipeline))
             except Exception as e:
                 st.warning("Cannot train your data, please upload your data and scale your data to train the model")
                     
