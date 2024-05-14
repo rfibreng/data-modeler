@@ -81,8 +81,8 @@ def save_result(data_to_save, model_selection, model):
         base_output_path = config['output_path']
 
         # Ensure the paths are combined correctly and handle different cases
-
-        folder = os.path.join(base_output_path, 'default', model_selection, f'{uid}_{data_to_save["experiment_date"]}_{data_to_save["model_selection"]}')
+        model_name = f'{uid}_{data_to_save["experiment_date"]}_{data_to_save["model_selection"]}'
+        folder = os.path.join(base_output_path, 'default', model_selection, model_name)
         os.makedirs(folder, exist_ok=True)
 
         # Saving the prediction data
@@ -93,7 +93,7 @@ def save_result(data_to_save, model_selection, model):
         with open(os.path.join(folder, 'model.pickle'), 'wb') as f:
             pickle.dump(model, f)
         
-        st.success(f"Model saved into repository with model name: {f'{uid}_{data_to_save["experiment_date"]}_{data_to_save["model_selection"]}'}")
+        st.success(f"Model saved into repository with model name: {model_name}")
 
     except Exception as e:
         print(e)
