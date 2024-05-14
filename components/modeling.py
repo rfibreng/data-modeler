@@ -32,10 +32,10 @@ from sqlalchemy import create_engine
 
 def save_data(df, dataset_name, model_description, data_to_save, task_selected, model_pipeline):
     save_result(data_to_save, task_selected, model_pipeline)
-    try:
-        insert_data(df, dataset_name, model_description)
-    except:
-        st.warning("Database is not connected please check is your database is on, or reload the page")
+    # try:
+    insert_data(df, dataset_name, model_description)
+    # except:
+    #     st.warning("Database is not connected please check is your database is on, or reload the page")
 
 def insert_data(df, dataset_name, model_description):
     engine = create_engine(f"starrocks://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}")
