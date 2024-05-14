@@ -31,7 +31,7 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 # Page configuration
-st.set_page_config(page_title="Data Modeler", layout="wide")
+st.set_page_config(page_title="Data Modeler", layout="wide", page_icon='assets/eyre.png')
 
 
 # Loading CSS
