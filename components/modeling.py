@@ -383,127 +383,127 @@ def modeling_page(st):
                 penalty=log_res_penalty, C=log_res_inverse, solver=log_res_solver)
 
             # Fitting Data to Logistic Regression Model
-            try:
-                if st.button("Fit Data to Logistic Model"):
-                    experiment_date = str(datetime.datetime.now())
-                    data_to_save['experiment_date'] = experiment_date
-                    # Initiating variable to fir data
-                    X_train = st.session_state.scaled_data_train
-                    X_test = st.session_state.scaled_data_test
-                    y_train = st.session_state.y_train
-                    y_test = st.session_state.y_test
+            # try:
+            if st.button("Fit Data to Logistic Model"):
+                experiment_date = str(datetime.datetime.now())
+                data_to_save['experiment_date'] = experiment_date
+                # Initiating variable to fir data
+                X_train = st.session_state.scaled_data_train
+                X_test = st.session_state.scaled_data_test
+                y_train = st.session_state.y_train
+                y_test = st.session_state.y_test
 
-                    # Fitting model to data
-                    log_res_obj.fit(X_train, y_train)
-                    is_train = True
-                    # Adding two spaces
-                    st.markdown("<br>", unsafe_allow_html=True)
-                    st.markdown("<br>", unsafe_allow_html=True)
+                # Fitting model to data
+                log_res_obj.fit(X_train, y_train)
+                is_train = True
+                # Adding two spaces
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("<br>", unsafe_allow_html=True)
 
-                    st.success("Training Success")
+                st.success("Training Success")
 
-                    # Predicting train data
-                    y_train_predict = log_res_obj.predict(X_train)
-                    y_train_predict_df = pd.DataFrame(y_train_predict)
-                    y_train_predict_proba = pd.DataFrame(
-                        log_res_obj.predict_proba(X_train))
+                # Predicting train data
+                y_train_predict = log_res_obj.predict(X_train)
+                y_train_predict_df = pd.DataFrame(y_train_predict)
+                y_train_predict_proba = pd.DataFrame(
+                    log_res_obj.predict_proba(X_train))
 
-                    # Predicting test data
-                    y_test_predict = log_res_obj.predict(X_test)
-                    y_test_predict_df = pd.DataFrame(y_test_predict)
-                    y_test_predict_proba = pd.DataFrame(
-                        log_res_obj.predict_proba(X_test))
+                # Predicting test data
+                y_test_predict = log_res_obj.predict(X_test)
+                y_test_predict_df = pd.DataFrame(y_test_predict)
+                y_test_predict_proba = pd.DataFrame(
+                    log_res_obj.predict_proba(X_test))
 
-                    label_target = list(y_train.unique())
+                label_target = list(y_train.unique())
 
-                    # Predicting F1 score
-                    classification_report_train = pd.DataFrame(
-                        classification_report(
-                            y_train,
-                            y_train_predict,
-                            labels=label_target,
-                            output_dict=True
-                        ))
-                    classification_report_test = pd.DataFrame(
-                        classification_report(
-                            y_test,
-                            y_test_predict,
-                            labels=label_target,
-                            output_dict=True
-                        ))
+                # Predicting F1 score
+                classification_report_train = pd.DataFrame(
+                    classification_report(
+                        y_train,
+                        y_train_predict,
+                        labels=label_target,
+                        output_dict=True
+                    ))
+                classification_report_test = pd.DataFrame(
+                    classification_report(
+                        y_test,
+                        y_test_predict,
+                        labels=label_target,
+                        output_dict=True
+                    ))
+                
+                if st.session_state['classification_type'] == 'Binary Class':
+                    roc_auc_train = show_roc_auc_score_binary_class(
+                            y_train, y_train_predict_proba)
+                    roc_auc_test = show_roc_auc_score_binary_class(
+                        y_test, y_test_predict_proba)
+                else:
+                    roc_auc_train = show_roc_auc_score_multi_class(
+                            y_train, y_train_predict_proba)
+                    roc_auc_test = show_roc_auc_score_multi_class(
+                        y_test, y_test_predict_proba)
+
+                cm = confusion_matrix(
+                        y_test, y_test_predict, labels=label_target)
+
+                # Showing Data Real vs Prediction
+                # Changing target series column to dataframe
+                y_train_df = y_train.to_frame()
+                y_test_df = y_test.to_frame()
+
+                # Concatting target actual column
+                target_actual_full = pd.concat([y_train_df, y_test_df],
+                                                axis=0)
+
+                # Adding index to predicttion of target train
+                train_index = list(y_train_df.index)
+                y_train_predict_df['index'] = train_index
+                y_train_predict_df.set_index('index', inplace=True)
+
+                # Adding index to prediction of target test
+                test_index = list(y_test_df.index)
+                y_test_predict_df['index'] = test_index
+                y_test_predict_df.set_index('index', inplace=True)
+
+                # Renaming target columns name of train data
+                y_train_df.columns = ["Target Actual"]
+                y_train_predict_df.columns = ["Target Predicted"]
+
+                # Showing data train full
+                data_train_full_prediction = pd.concat([st.session_state.feature_data_train,
+                                                        y_train_df, y_train_predict_df],
+                                                        axis=1)
+                # Renaming target columns name of test data
+                y_test_df.columns = ["Target Actual"]
+                y_test_predict_df.columns = ["Target Predicted"]
+
+                # Showing data train full
+                data_test_full_prediction = pd.concat([st.session_state.feature_data_test,
+                                                        y_test_df, y_test_predict_df],
+                                                        axis=1)
+                ## show classification metrics components
+                show_classification_metrics(data_train_full_prediction, data_test_full_prediction,
+                        classification_report_train, classification_report_test,
+                        roc_auc_train, roc_auc_test, cm, label_target)
                     
-                    if st.session_state['classification_type'] == 'Binary Class':
-                        roc_auc_train = show_roc_auc_score_binary_class(
-                                y_train, y_train_predict_proba)
-                        roc_auc_test = show_roc_auc_score_binary_class(
-                            y_test, y_test_predict_proba)
-                    else:
-                        roc_auc_train = show_roc_auc_score_multi_class(
-                                y_train, y_train_predict_proba)
-                        roc_auc_test = show_roc_auc_score_multi_class(
-                            y_test, y_test_predict_proba)
+                data_to_save['outputs'] = {
+                    "y_train_predict": data_train_full_prediction,
+                    "y_test_predict": data_test_full_prediction,
+                    "classification_score_train": classification_report_train,
+                    "classification_score_test": classification_report_test,
+                    "roc_auc_train": roc_auc_train,
+                    "roc_auc_test": roc_auc_test,
+                    "confussion_matrix":cm
+                }
+                st.session_state.data_to_save = data_to_save
 
-                    cm = confusion_matrix(
-                            y_test, y_test_predict, labels=label_target)
-
-                    # Showing Data Real vs Prediction
-                    # Changing target series column to dataframe
-                    y_train_df = y_train.to_frame()
-                    y_test_df = y_test.to_frame()
-
-                    # Concatting target actual column
-                    target_actual_full = pd.concat([y_train_df, y_test_df],
-                                                    axis=0)
-
-                    # Adding index to predicttion of target train
-                    train_index = list(y_train_df.index)
-                    y_train_predict_df['index'] = train_index
-                    y_train_predict_df.set_index('index', inplace=True)
-
-                    # Adding index to prediction of target test
-                    test_index = list(y_test_df.index)
-                    y_test_predict_df['index'] = test_index
-                    y_test_predict_df.set_index('index', inplace=True)
-
-                    # Renaming target columns name of train data
-                    y_train_df.columns = ["Target Actual"]
-                    y_train_predict_df.columns = ["Target Predicted"]
-
-                    # Showing data train full
-                    data_train_full_prediction = pd.concat([st.session_state.feature_data_train,
-                                                            y_train_df, y_train_predict_df],
-                                                            axis=1)
-                    # Renaming target columns name of test data
-                    y_test_df.columns = ["Target Actual"]
-                    y_test_predict_df.columns = ["Target Predicted"]
-
-                    # Showing data train full
-                    data_test_full_prediction = pd.concat([st.session_state.feature_data_test,
-                                                            y_test_df, y_test_predict_df],
-                                                            axis=1)
-                    ## show classification metrics components
-                    show_classification_metrics(data_train_full_prediction, data_test_full_prediction,
-                            classification_report_train, classification_report_test,
-                            roc_auc_train, roc_auc_test, cm, label_target)
-                        
-                    data_to_save['outputs'] = {
-                        "y_train_predict": data_train_full_prediction,
-                        "y_test_predict": data_test_full_prediction,
-                        "classification_score_train": classification_report_train,
-                        "classification_score_test": classification_report_test,
-                        "roc_auc_train": roc_auc_train,
-                        "roc_auc_test": roc_auc_test,
-                        "confussion_matrix":cm
-                    }
-                    st.session_state.data_to_save = data_to_save
-
-                    log_res_pipeline = Pipeline(steps=[
-                        ('preprocessor', st.session_state.preprocessor),
-                        ('classifier', log_res_obj)
-                    ])
-                    save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, log_res_pipeline)
-            except Exception as e:
-                st.warning("Cannot train your data, please upload your data and scale your data to train the model")
+                log_res_pipeline = Pipeline(steps=[
+                    ('preprocessor', st.session_state.preprocessor),
+                    ('classifier', log_res_obj)
+                ])
+                save_data(pd.concat([data_train_full_prediction, data_test_full_prediction]), st.session_state['data_name'], model_selection, data_to_save, task_selected, log_res_pipeline)
+            # except Exception as e:
+            #     st.warning("Cannot train your data, please upload your data and scale your data to train the model")
                     
         # Setting Random Forest Classifier Model
         if model_selection == "Random Forest":
