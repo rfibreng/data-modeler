@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
 from util import save_result, show_roc_auc_score_binary_class
 from util import show_roc_auc_score_multi_class, plot_confusion_matrix_multi_class
-from datetime import datetime
+import datetime
 
 from streamlit_option_menu import option_menu
 import pandas as pd
@@ -60,7 +60,7 @@ def insert_data(df, dataset_name, model_description):
     # Prepare and execute the insertion query for the main predictions_master table
     connection.execute(
         "INSERT INTO predictions_master (id, dataset, model_prediction, prediction_at) VALUES (%s, %s, %s, %s)",
-        (str(uid), dataset_name, model_description, datetime.now())
+        (str(uid), dataset_name, model_description, datetime.datetime.now())
     )
 
     # Insert DataFrame data into the newly created table using psycopg2's execute_values for bulk insertion
