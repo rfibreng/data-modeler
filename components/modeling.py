@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
 from util import save_result, show_roc_auc_score_binary_class
 from util import show_roc_auc_score_multi_class, plot_confusion_matrix_multi_class
-import datetime
+from datetime import datetime
 
 from streamlit_option_menu import option_menu
 import pandas as pd
