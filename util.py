@@ -92,6 +92,8 @@ def save_result(data_to_save, model_selection, model):
         # Saving the model
         with open(os.path.join(folder, 'model.pickle'), 'wb') as f:
             pickle.dump(model, f)
+        
+        st.success(f"Model saved into repository with model name: {f'{uid}_{data_to_save["experiment_date"]}_{data_to_save["model_selection"]}'}")
 
     except Exception as e:
         print(e)

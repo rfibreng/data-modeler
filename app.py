@@ -41,6 +41,7 @@ utl.local_css("assets/custom.css")
 hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
+            .stDeployButton {display:none;}
             footer {visibility: hidden;}
             </style>
             """
@@ -78,8 +79,8 @@ st.sidebar.image("assets/eyre.png",
 
 # Sidebar Menu
 with st.sidebar:
-    menu_selected = option_menu("", ["Home", "Data Exploration", "Data Editing", "Feature Engineering", "Modelling", "Experiment Logs", "Inference"],
-                                icons=["house", "card-list", "pencil-square",
+    menu_selected = option_menu("", ["Home", "Data Exploration", "Feature Engineering", "Modelling", "Experiment Logs", "Inference"],
+                                icons=["house", "card-list",
                                        "columns-gap", "gear", "folder", "play", "folder"],
                                 menu_icon="cast",
                                 default_index=0,
@@ -107,9 +108,9 @@ if menu_selected == "Home":
 if menu_selected == "Data Exploration":
     data_exploration_page(st)
 
-# Configuring Data Editing Menu
-if menu_selected == "Data Editing":
-    data_editing_page(st)
+# # Configuring Data Editing Menu
+# if menu_selected == "Data Editing":
+#     data_editing_page(st)
 
 # Configuring Feature Engineering Menu
 if menu_selected == "Feature Engineering":
