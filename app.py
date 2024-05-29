@@ -91,6 +91,18 @@ with st.sidebar:
                                     "nav-link-selected": {"color": "#FF7F00", "background-color": "rgba(128, 128, 128, 0.1)"}
     })
 
+# Add Help Desk button in the header
+st.markdown(
+    """
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Eyre</h2>
+        <a href="https://dev05.overtech.id/" target="_blank">
+            <button style="background-color: #FF7F00; color: white; border: none; padding: 10px 20px; cursor: pointer;">Help Desk</button>
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Configuring home menu
 if menu_selected == "Home":
