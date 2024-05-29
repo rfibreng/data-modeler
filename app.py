@@ -95,7 +95,7 @@ with st.sidebar:
 st.markdown(
     """
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>Eyre</h2>
+        <h2></h2>
         <a href="https://dev05.overtech.id/" target="_blank">
             <button style="background-color: #FF7F00; color: white; border: none; padding: 10px 20px; cursor: pointer;">Help Desk</button>
         </a>
