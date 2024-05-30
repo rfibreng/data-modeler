@@ -116,6 +116,9 @@ if menu_selected == "Inference":
 
 # Configuring Help Desk
 if menu_selected == "Help Desk":
-    js = "window.open('https://dev05.overtech.id/')"
-    html = f'<script>{js}</script>'
-    st.markdown(html, unsafe_allow_html=True)
+    js = """
+    <script type="text/javascript">
+        window.open("https://dev05.overtech.id/", "_blank").focus();
+    </script>
+    """
+    st.markdown(js, unsafe_allow_html=True)
