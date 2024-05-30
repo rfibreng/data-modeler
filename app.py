@@ -73,8 +73,8 @@ st.sidebar.image("assets/eyre.png", output_format='PNG', width=200)
 
 # Sidebar Menu
 with st.sidebar:
-    menu_selected = option_menu("", ["Home", "Data Exploration", "Feature Engineering", "Modelling", "Experiment Logs", "Inference", "Help Desk"],
-                                icons=["house", "card-list", "columns-gap", "gear", "folder", "play", "question-circle"],
+    menu_selected = option_menu("", ["Home", "Data Exploration", "Feature Engineering", "Modelling", "Experiment Logs", "Inference"],
+                                icons=["house", "card-list", "columns-gap", "gear", "folder", "play"],
                                 menu_icon="cast",
                                 default_index=0,
                                 styles={
@@ -83,6 +83,41 @@ with st.sidebar:
                                     "nav-link": {"font-size": "15px", "text-align": "left", "margin": "0px", "--hover-color": "#444444"},
                                     "nav-link-selected": {"color": "#FF7F00", "background-color": "rgba(128, 128, 128, 0.1)"}
     })
+
+    # Adding Help Desk button
+    st.markdown(
+        """
+        <style>
+        .help-desk-button {
+            background-color: transparent;
+            color: white;
+            text-align: left;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+        .help-desk-button:hover {
+            background-color: rgba(128, 128, 128, 0.1);
+        }
+        .help-desk-icon {
+            font-size: 20px;
+            margin-right: 15px;
+            color: white;
+        }
+        </style>
+        <a href="https://dev05.overtech.id/" target="_blank" style="text-decoration: none;">
+            <div class="help-desk-button">
+                <span class="help-desk-icon">&#x2753;</span> Help Desk
+            </div>
+        </a>
+        """,
+        unsafe_allow_html=True
+    )
 
 # Configuring home menu
 if menu_selected == "Home":
@@ -113,12 +148,3 @@ if menu_selected == "Experiment Logs":
 # Configuring Inference Menu
 if menu_selected == "Inference":
     inference_page(st)
-
-# Configuring Help Desk
-if menu_selected == "Help Desk":
-    js = """
-    <script type="text/javascript">
-        window.open("https://dev05.overtech.id/", "_blank").focus();
-    </script>
-    """
-    st.markdown(js, unsafe_allow_html=True)
