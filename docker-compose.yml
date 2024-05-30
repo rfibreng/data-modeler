@@ -10,6 +10,7 @@ services:
       - ./output:/app/output
     ports:
       - "7777:7777"
+    restart: always
     # depends_on:
     #   - starrocks  # Depend on StarRocks frontend instead of PostgreSQL
 
