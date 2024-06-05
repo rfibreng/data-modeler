@@ -5,3 +5,4 @@ db_user: 'ceger'          # Default user for StarRocks; adjust as necessary
 db_password: 'ceger'  # Use a secure password as needed
 db_port: '9030'
 db_name: 'data_modeler'
+help_desk_url: "https://dev05.overtech.id/"

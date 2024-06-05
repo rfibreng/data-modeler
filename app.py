@@ -86,9 +86,9 @@ with st.sidebar:
 
     # Adding Help Desk button
     st.markdown(
-        """
+        f"""
         <style>
-        .help-desk-button {
+        .help-desk-button {{
             background-color: transparent;
             color: white;
             text-align: left;
@@ -100,17 +100,17 @@ with st.sidebar:
             align-items: center;
             font-weight: 500;
             transition: background-color 0.2s ease;
-        }
-        .help-desk-button:hover {
+        }}
+        .help-desk-button:hover {{
             background-color: rgba(128, 128, 128, 0.1);
-        }
-        .help-desk-icon {
+        }}
+        .help-desk-icon {{
             font-size: 20px;
             margin-right: 15px;
             color: white;
-        }
+        }}
         </style>
-        <a href="https://dev05.overtech.id/" target="_blank" style="text-decoration: none;">
+        <a href="{config['help_desk_url']}" target="_blank" style="text-decoration: none;">
             <div class="help-desk-button">
                 <span class="help-desk-icon">&#x2753;</span> Help Desk
             </div>
