@@ -6,7 +6,8 @@ services:
     container_name: data-modeler
     volumes:
       - ./config:/app/config
-      - /home/datamodeler/studio/data:/app/datasets/datamodeler
+      - /home/datamodeler/studio/data:/app/datasets/data-processor
+      - ./datasets:/app/datasets/sample-data
       - ./output:/app/output
     ports:
       - "7777:7777"
