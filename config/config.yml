@@ -1,6 +1,6 @@
 output_path: 'output'
 pds_data_path: 'datasets'
-db_host: '10.184.0.9'  # Use the service name of the StarRocks frontend from docker-compose.yml
+db_host: '10.184.0.24'  # Use the service name of the StarRocks frontend from docker-compose.yml
 db_user: 'ceger'          # Default user for StarRocks; adjust as necessary
 db_password: 'ceger'  # Use a secure password as needed
 db_port: '9030'
