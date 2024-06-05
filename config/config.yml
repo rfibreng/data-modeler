@@ -1,8 +1,8 @@
 output_path: 'output'
 pds_data_path: 'datasets'
 db_host: '10.184.0.24'  # Use the service name of the StarRocks frontend from docker-compose.yml
-db_user: 'ceger'          # Default user for StarRocks; adjust as necessary
-db_password: 'ceger'  # Use a secure password as needed
+db_user: 'root'          # Default user for StarRocks; adjust as necessary
+db_password: 'C3gerbdi'  # Use a secure password as needed
 db_port: '9030'
 db_name: 'data_modeler'
 help_desk_url: "https://dev05.overtech.id/"
