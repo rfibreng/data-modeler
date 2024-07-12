@@ -43,69 +43,14 @@ def show_classification_metrics_logger(data_train_full_prediction, data_test_ful
     # Showing Confusion Matrix
     show_confussion_matrix(cm, label_target)
 
-def show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test, rmse_train, rmse_test):
-    with st.expander("Show Data"):
-        show_data_prediction(data_train_full_prediction, data_test_full_prediction)
-
-    # Adding one space
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Showing mean absolute error
-    with st.expander("Show Mean Absolute Error"):
-        st.write("Train Score")
-        st.write(mae_train)
-        st.write("Test Score")
-        st.write(mae_test)
-        # Explanation for MAE
-        st.markdown("### Mean Absolute Error (MAE) Explanation:")
-        st.write("""
-        Mean Absolute Error (MAE) is a measure of errors between paired observations expressing the same phenomenon. Comparing predictions and outcomes, MAE is the average of the absolute differences between the predicted values and actual values without considering the direction. It's a linear score which means all individual differences are weighted equally. It's particularly useful in regression and forecasting models.
-        """)
-
-    # Adding one space
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Showing mean squared error
-    with st.expander("Show Mean Squared Error"):
-        st.write("Train Score")
-        st.write(mse_train)
-        st.write("Test Score")
-        st.write(mse_test)
-        # Explanation for MSE
-        st.markdown("### Mean Squared Error (MSE) Explanation:")
-        st.write("""
-        Mean Squared Error (MSE) is a risk metric that calculates the average of the squares of the errors—that is, the average squared difference between the estimated values and the actual value. MSE gives a higher weight to larger errors due to the squaring of each term, which can be particularly important in real-world contexts where large errors are particularly undesirable.
-        """)
-
-    # Adding one space
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Showing root mean squared error
-    with st.expander("Show Root Mean Squared Error"):
-        st.write("Train Score")
-        st.write(rmse_train)
-        st.write("Test Score")
-        st.write(rmse_test)
-        # Explanation for RMSE
-        st.markdown("### Root Mean Squared Error (RMSE) Explanation:")
-        st.write("""
-        Root Mean Squared Error (RMSE) is the square root of the average of squared differences between prediction and actual observation. It represents the standard deviation of the prediction errors (residuals). RMSE gives a relatively high weight to large errors and is most useful when large errors are particularly undesirable.
-        """)
-
-    # Giving three spaces
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
-
-def show_regression_metrics_logger(data_train_full_prediction, data_test_full_prediction,
-                                   mae_train, mae_test, mse_train, mse_test, rmse_train, rmse_test,
-                                   model_selection, config, uid):
+def show_regression_metrics_logger(data_train_full_prediction, data_test_full_prediction, mae_train, 
+                                   mae_test, mse_train, mse_test, rmse_train, rmse_test, model_selection, config, uid):
     st.markdown(f"<h3 class='menu-secondary'>Model: {model_selection}</h3>",
-                unsafe_allow_html=True)
+                                unsafe_allow_html=True)
     st.markdown(f"<h4>Model Id: {uid}</h4>",
-                unsafe_allow_html=True)
+                                unsafe_allow_html=True)
     st.markdown(f"<h4>Model Configuration</h4>",
-                unsafe_allow_html=True)
+                                unsafe_allow_html=True)
     for key, value in config.items():
         st.write(f'{key}: {value}')
     show_data_prediction(data_train_full_prediction, data_test_full_prediction)
@@ -113,66 +58,59 @@ def show_regression_metrics_logger(data_train_full_prediction, data_test_full_pr
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Showing mean absolute error
-    with st.expander("Show Mean Absolute Error"):
-        st.write("Train Score")
-        st.write(mae_train)
-        st.write("Test Score")
-        st.write(mae_test)
-        # Explanation for MAE
-        st.markdown("### Mean Absolute Error (MAE) Explanation:")
-        st.write("""
-        Mean Absolute Error (MAE) is a measure of errors between paired observations expressing the same phenomenon. Comparing predictions and outcomes, MAE is the average of the absolute differences between the predicted values and actual values without considering the direction. It's a linear score which means all individual differences are weighted equally. It's particularly useful in regression and forecasting models.
-        """)
+    # Showing mean absolute score
+    st.write("MAE Train Score")
+    st.write(mae_train)
+    st.write("MAE Test Score")
+    st.write(mae_test)
+
+    st.markdown("### Mean Absolute Error (MAE) Explanation:")
+    st.write("""
+    Mean Absolute Error (MAE) is a measure of errors between paired observations expressing the same phenomenon. Comparing predictions and outcomes, MAE is the average of the absolute differences between the predicted values and actual values without considering the direction. It's a linear score which means all individual differences are weighted equally. It's particularly useful in regression and forecasting models.
+    """)
 
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Showing mean squared error
-    with st.expander("Show Mean Squared Error"):
-        st.write("Train Score")
-        st.write(mse_train)
-        st.write("Test Score")
-        st.write(mse_test)
-        # Explanation for MSE
-        st.markdown("### Mean Squared Error (MSE) Explanation:")
-        st.write("""
-        Mean Squared Error (MSE) is a risk metric that calculates the average of the squares of the errors—that is, the average squared difference between the estimated values and the actual value. MSE gives a higher weight to larger errors due to the squaring of each term, which can be particularly important in real-world contexts where large errors are particularly undesirable.
-        """)
+    # Showing score of MSE
+    st.write("MSE Train Score")
+    st.write(mse_train)
+    st.write("MSE Test Score")
+    st.write(mse_test)
+
+    st.markdown("### Mean Squared Error (MSE) Explanation:")
+    st.write("""
+    Mean Squared Error (MSE) is a risk metric that calculates the average of the squares of the errors—that is, the average squared difference between the estimated values and the actual value. MSE gives a higher weight to larger errors due to the squaring of each term, which can be particularly important in real-world contexts where large errors are particularly undesirable.
+    """)
 
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Showing root mean squared error
-    with st.expander("Show Root Mean Squared Error"):
-        st.write("Train Score")
-        st.write(rmse_train)
-        st.write("Test Score")
-        st.write(rmse_test)
-        # Explanation for RMSE
-        st.markdown("### Root Mean Squared Error (RMSE) Explanation:")
-        st.write("""
-        Root Mean Squared Error (RMSE) is the square root of the average of squared differences between prediction and actual observation. It represents the standard deviation of the prediction errors (residuals). RMSE gives a relatively high weight to large errors and is most useful when large errors are particularly undesirable.
-        """)
+    # Showing score of RMSE
+    st.write("RMSE Train Score")
+    st.write(rmse_train)
+    st.write("RMSE Test Score")
+    st.write(rmse_test)
 
-    # Giving three spaces
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### Root Mean Squared Error (RMSE) Explanation:")
+    st.write("""
+    Root Mean Squared Error (RMSE) is the square root of the average of squared differences between prediction and actual observation. It represents the standard deviation of the prediction errors (residuals). RMSE gives a relatively high weight to large errors and is most useful when large errors are particularly undesirable.
+    """)
+
+    # Giving two spaces
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
 
-def show_clustering_metrics_logger(data_full_clustered, calinski_harabasz, davies_bouldin, model_selection, config, uid):
+def show_clustering_metrics_logger(data_full_clustered, calinski_harabasz, davies_bouldin, model_selection, config,uid):
     st.markdown(f"<h3 class='menu-secondary'>Model: {model_selection}</h3>",
-                unsafe_allow_html=True)
+                                unsafe_allow_html=True)
     st.markdown(f"<h4>Model Id: {uid}</h4>",
-                unsafe_allow_html=True)
+                                unsafe_allow_html=True)
     st.markdown(f"<h4>Model Configuration</h4>",
-                unsafe_allow_html=True)
+                                unsafe_allow_html=True)
     for key, value in config.items():
         st.write(f'{key}: {value}')
     show_data_prediction(data_full_clustered)
-
-    # Adding one space
-    st.markdown("<br>", unsafe_allow_html=True)
 
     # Adding one space
     st.markdown("<br>", unsafe_allow_html=True)
@@ -222,7 +160,6 @@ def experiment_log_page(st):
                                 default_index=0,
                                 styles={
                                     "container": {"background-color": "#25292aff"},
-                                    # "icon": {"color": "orange", "font-size": "25px"},
                                     "nav-link": {"font-size": "15px", "text-align": "left", "margin": "0px", "--hover-color": "#444444", "text-align-last": "center"},
                                     "nav-link-selected": {"color": "#FF7F00", "background-color": "rgba(128, 128, 128, 0.1)"}
     })
