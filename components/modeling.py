@@ -164,7 +164,7 @@ def show_classification_metrics(data_train_full_prediction, data_test_full_predi
     with st.expander("Show Confusion Matrix"):
         show_confussion_matrix(cm, label_target)
 
-def show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test):
+def show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test, rmse_train, rmse_test):
     with st.expander("Show Data"):
         show_data_prediction(data_train_full_prediction, data_test_full_prediction)
 
@@ -196,6 +196,21 @@ def show_regression_metrics(data_train_full_prediction, data_test_full_predictio
         st.markdown("### Mean Squared Error (MSE) Explanation:")
         st.write("""
         Mean Squared Error (MSE) is a risk metric that calculates the average of the squares of the errors—that is, the average squared difference between the estimated values and the actual value. MSE gives a higher weight to larger errors due to the squaring of each term, which can be particularly important in real-world contexts where large errors are particularly undesirable.
+        """)
+
+    # Adding one space
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Showing root mean squared error
+    with st.expander("Show Root Mean Squared Error"):
+        st.write("Train Score")
+        st.write(rmse_train)
+        st.write("Test Score")
+        st.write(rmse_test)
+        # Explanation for RMSE
+        st.markdown("### Root Mean Squared Error (RMSE) Explanation:")
+        st.write("""
+        Root Mean Squared Error (RMSE) is the square root of the average of squared differences between prediction and actual observation. It represents the standard deviation of the prediction errors (residuals). RMSE gives a relatively high weight to large errors and is most useful when large errors are particularly undesirable.
         """)
 
     # Giving three spaces
@@ -888,32 +903,6 @@ def modeling_page(st):
                      st.session_state.scaled_data_train.shape)
         else:
             print("")
-            # # Setting the upload variabel
-            # uploaded_file = st.file_uploader("Choose a file to upload for training data",
-            #                                  type="csv",
-            #                                  help="The file will be used for training the Machine Learning",
-            #                                  )
-
-            # # Setting the upload options when there's file on uploader menu
-            # if uploaded_file is not None:
-            #     try:
-            #         # Uploading Dataframe
-            #         dataframe = get_data(uploaded_file)
-
-            #         X = dataframe.drop(columns="Outcome")
-            #         y = dataframe["Outcome"]
-
-            #         # Storing feature dataframe to session state
-            #         if 'X' not in st.session_state:
-            #             st.session_state["X"] = X
-
-            #         # Storing target series to session state
-            #         if 'y' not in st.session_state:
-            #             st.session_state["y"] = y
-
-            #     except:
-            #         st.markdown("<span class='info-box'>Please upload any data</span>",
-            #                     unsafe_allow_html=True)
 
         # Markdown to give space
         st.markdown("<br>", unsafe_allow_html=True)
@@ -995,11 +984,15 @@ def modeling_page(st):
                     mae_test = mean_absolute_error(
                         y_test, y_test_predict)
 
-                    # Calculating mean squarred error
+                    # Calculating mean squared error
                     mse_train = mean_squared_error(
                         y_train, y_train_predict)
                     mse_test = mean_squared_error(
-                    y_test, y_test_predict)
+                        y_test, y_test_predict)
+                    
+                    # Calculating root mean squared error
+                    rmse_train = np.sqrt(mse_train)
+                    rmse_test = np.sqrt(mse_test)
 
                     # Changing target series column to dataframe
                     y_train_df = y_train.to_frame()
@@ -1042,9 +1035,11 @@ def modeling_page(st):
                         "mse_train": mse_train,
                         "mse_test":mse_test,
                         "mae_train":mae_train,
-                        "mae_test":mae_test
+                        "mae_test":mae_test,
+                        "rmse_train": rmse_train,
+                        "rmse_test": rmse_test
                     }
-                    show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test)
+                    show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test, rmse_train, rmse_test)
 
                     lin_reg_pipeline = Pipeline(steps=[
                         ('preprocessor', st.session_state.preprocessor),
@@ -1126,11 +1121,15 @@ def modeling_page(st):
                     mae_test = mean_absolute_error(
                         y_test, y_test_predict)
 
-                    # Calculating mean squarred error
+                    # Calculating mean squared error
                     mse_train = mean_squared_error(
                         y_train, y_train_predict)
                     mse_test = mean_squared_error(
                         y_test, y_test_predict)
+                    
+                    # Calculating root mean squared error
+                    rmse_train = np.sqrt(mse_train)
+                    rmse_test = np.sqrt(mse_test)
 
                     # Changing target series column to dataframe
                     y_train_df = y_train.to_frame()
@@ -1173,9 +1172,11 @@ def modeling_page(st):
                         "mse_train": mse_train,
                         "mse_test":mse_test,
                         "mae_train":mae_train,
-                        "mae_test":mae_test
+                        "mae_test":mae_test,
+                        "rmse_train": rmse_train,
+                        "rmse_test": rmse_test
                     }
-                    show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test)
+                    show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test, rmse_train, rmse_test)
 
                     rfr_pipeline = Pipeline(steps=[
                         ('preprocessor', st.session_state.preprocessor),
@@ -1307,11 +1308,15 @@ def modeling_page(st):
                     mae_test = mean_absolute_error(
                         y_test, y_test_predict)
 
-                    # Calculating mean squarred error
+                    # Calculating mean squared error
                     mse_train = mean_squared_error(
                         y_train, y_train_predict)
                     mse_test = mean_squared_error(
                         y_test, y_test_predict)
+                    
+                    # Calculating root mean squared error
+                    rmse_train = np.sqrt(mse_train)
+                    rmse_test = np.sqrt(mse_test)
 
                     # Changing target series column to dataframe
                     y_train_df = y_train.to_frame()
@@ -1354,10 +1359,12 @@ def modeling_page(st):
                         "mse_train": mse_train,
                         "mse_test":mse_test,
                         "mae_train":mae_train,
-                        "mae_test":mae_test
+                        "mae_test":mae_test,
+                        "rmse_train": rmse_train,
+                        "rmse_test": rmse_test
                     }
                     #show regression components
-                    show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test)
+                    show_regression_metrics(data_train_full_prediction, data_test_full_prediction, mae_train, mae_test, mse_train, mse_test, rmse_train, rmse_test)
 
                     svm_pipeline = Pipeline(steps=[
                         ('preprocessor', st.session_state.preprocessor),
