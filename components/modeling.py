@@ -29,6 +29,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.metrics.cluster import calinski_harabasz_score, davies_bouldin_score
 from util import config, generate_random_alphanumeric, add_index_column_if_first_is_float, transform_digits, remove_punctuation, dtype_to_sql
 from sqlalchemy import create_engine
+import numpy as np
 
 def save_data(df, dataset_name, model_description, data_to_save, task_selected, model_pipeline):
     save_result(data_to_save, task_selected, model_pipeline)

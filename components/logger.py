@@ -7,6 +7,7 @@ import os
 import pickle
 from datetime import datetime, timedelta
 from util import config
+import numpy as np
 
 from components.modeling import show_classification_report, show_confussion_matrix, show_data_prediction, show_roc_auc_report
 
