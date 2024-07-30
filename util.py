@@ -143,7 +143,7 @@ def process_data(uploaded_file, option_selected, delimiter):
                         unsafe_allow_html=True)
 
 def data_uploader_components(st):
-    option_selected = st.selectbox("Data Source", ['Upload','PDS'])
+    option_selected = st.selectbox("Data Source", ['Upload','Data Studio'])
     delimiter = st.selectbox('delimiter', [',',';'])
     uploaded_file = None
     if option_selected == "Upload":
@@ -152,7 +152,7 @@ def data_uploader_components(st):
                                      help="The supported file is only in csv formatted"
                                      )
         
-    elif option_selected == "PDS":
+    elif option_selected == "Data Studio":
         data_list = ["None"]
         # Use os.walk to traverse through all directories and subdirectories
         for dirpath, dirnames, filenames in os.walk(config['pds_data_path']):

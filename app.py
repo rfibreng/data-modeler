@@ -31,7 +31,7 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 # Page configuration
-st.set_page_config(page_title="Eyre", layout="wide", page_icon='assets/rect1.png')
+st.set_page_config(page_title="Data Modeler", layout="wide", page_icon='assets/kejaksaan2.png')
 
 # Loading CSS
 utl.local_css("assets/custom.css")
@@ -69,7 +69,7 @@ def set_png_as_page_bg(png_file):
 set_png_as_page_bg('assets/bg.png')
 
 # Logo in side bar configuration
-st.sidebar.image("assets/eyre.png", output_format='PNG', width=200)
+st.sidebar.image("assets/kejaksaan2.png", output_format='PNG', width=200)
 
 # Sidebar Menu
 with st.sidebar:
