@@ -217,15 +217,17 @@ def feature_engineering_page(st):
             
             common_columns = set(feature_column_number).intersection(set(feature_column_text))
 
+            if common_columns:
+                st.warning(f"Warning: The following columns are selected in both numeric and text/categorical features: {', '.join(common_columns)}")
+                return
+
             # Making column for showing features and target
             col5, col6 = st.columns([3, 1])
-            try:
-                full_data_feature = pd.concat([st.session_state.data[feature_column_number],
+
+            full_data_feature = pd.concat([st.session_state.data[feature_column_number],
                                            st.session_state.data[feature_column_text]],
                                           axis=1)
-            except:
-                st.warning(f"Warning: The following columns are selected in both numeric and text/categorical features")
-                st.stop()
+
             with col5:
                 st.write("List of Feature Data")
                 st.write(full_data_feature)
@@ -430,15 +432,18 @@ def feature_engineering_page(st):
                                                      default=None)
                 st.write("text/categorical feature is feature that contain categorical or text")
 
+            common_columns = set(feature_column_number).intersection(set(feature_column_text))
+
+            if common_columns:
+                st.warning(f"Warning: The following columns are selected in both numeric and text/categorical features: {', '.join(common_columns)}")
+                return
+
             # Making column for showing features and target
             col5, col6 = st.columns([3, 1])
-            try:
-                full_data_feature = pd.concat([st.session_state.data[feature_column_number],
+
+            full_data_feature = pd.concat([st.session_state.data[feature_column_number],
                                            st.session_state.data[feature_column_text]],
                                           axis=1)
-            except:
-                st.warning(f"Warning: The following columns are selected in both numeric and text/categorical features")
-                st.stop()
 
             with col5:
                 st.write("List of Feature Data")
@@ -637,13 +642,10 @@ def feature_engineering_page(st):
 
             # Giving two spaces
             st.markdown("<br>", unsafe_allow_html=True)
-            try:
-                feature_data = pd.concat([st.session_state.data[feature_column_number],
+
+            feature_data = pd.concat([st.session_state.data[feature_column_number],
                                       st.session_state.data[feature_column_text]],
                                      axis=1)
-            except:
-                st.warning(f"Warning: The following columns are selected in both numeric and text/categorical features")
-                st.stop()
 
             st.write(feature_data)
             st.write("- The shape of the data :",
