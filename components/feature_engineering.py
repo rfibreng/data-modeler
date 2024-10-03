@@ -214,6 +214,12 @@ def feature_engineering_page(st):
                 st.markdown("<br>", unsafe_allow_html=True)
                 classification_type = st.selectbox("Select classification type",
                                                    ["Binary Class", "Multi Class"])
+            
+            common_columns = set(feature_column_number).intersection(set(feature_column_text))
+
+            if common_columns:
+                st.warning(f"Warning: The following columns are selected in both numeric and text/categorical features: {', '.join(common_columns)}")
+                return
 
             # Making column for showing features and target
             col5, col6 = st.columns([3, 1])
@@ -426,6 +432,12 @@ def feature_engineering_page(st):
                                                      default=None)
                 st.write("text/categorical feature is feature that contain categorical or text")
 
+            common_columns = set(feature_column_number).intersection(set(feature_column_text))
+
+            if common_columns:
+                st.warning(f"Warning: The following columns are selected in both numeric and text/categorical features: {', '.join(common_columns)}")
+                return
+
             # Making column for showing features and target
             col5, col6 = st.columns([3, 1])
 
@@ -621,6 +633,12 @@ def feature_engineering_page(st):
                                                      default=None,
                                                      placeholder="Select columns")
                 st.write("text/categorical feature is feature that contain categorical or text")
+
+            common_columns = set(feature_column_number).intersection(set(feature_column_text))
+
+            if common_columns:
+                st.warning(f"Warning: The following columns are selected in both numeric and text/categorical features: {', '.join(common_columns)}")
+                return
 
             # Giving two spaces
             st.markdown("<br>", unsafe_allow_html=True)
